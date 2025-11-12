@@ -255,6 +255,30 @@
             transform: scale(0.98);
         }
 
+        .share-btn {
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .share-btn:hover {
+            background: rgba(118, 75, 162, 0.9);
+            transform: scale(1.02);
+        }
+
+        .share-btn:active {
+            transform: scale(0.98);
+        }
+
         .clear-btn {
             background: rgba(255, 107, 107, 0.9);
             color: white;
@@ -491,9 +515,280 @@
                 display: flex;
             }
         }
+
+        /* Authentication Modal */
+        .auth-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 20000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .auth-overlay.active {
+            display: flex;
+        }
+
+        .auth-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .auth-modal h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .auth-modal p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .auth-btn:hover {
+            background: #764ba2;
+            transform: scale(1.02);
+        }
+
+        .auth-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+            position: relative;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .auth-divider::before {
+            left: 0;
+        }
+
+        .auth-divider::after {
+            right: 0;
+        }
+
+        .social-btn {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .social-btn:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .social-btn.google {
+            color: #4285F4;
+        }
+
+        .social-btn.apple {
+            color: #000;
+        }
+
+        .auth-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .auth-error.show {
+            display: block;
+        }
+
+        .user-profile {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .user-profile.show {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .user-email {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ee5a52;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
+    <!-- User Profile Display -->
+    <div class="user-profile" id="userProfile">
+        <div class="user-email" id="userEmail"></div>
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-modal">
+            <h2>Welcome to CarBOOl Pro!</h2>
+            <p>Sign in to save and share your carpools</p>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+            </div>
+
+            <div class="auth-error" id="authError"></div>
+
+            <!-- Login Form -->
+            <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+                <input type="email" class="auth-input" id="loginEmail" placeholder="Email" required>
+                <input type="password" class="auth-input" id="loginPassword" placeholder="Password" required>
+                <button type="submit" class="auth-btn" id="loginBtn">Login</button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
+                <input type="email" class="auth-input" id="signupEmail" placeholder="Email" required>
+                <input type="password" class="auth-input" id="signupPassword" placeholder="Password (min 6 chars)" required minlength="6">
+                <input type="password" class="auth-input" id="signupConfirmPassword" placeholder="Confirm Password" required minlength="6">
+                <button type="submit" class="auth-btn" id="signupBtn">Create Account</button>
+            </form>
+
+            <div class="auth-divider">or</div>
+
+            <!-- Social Sign In -->
+            <button class="social-btn google" onclick="handleGoogleSignIn()">
+                <span>🔵</span>
+                Sign in with Google
+            </button>
+            <button class="social-btn apple" onclick="handleAppleSignIn()">
+                <span>🍎</span>
+                Sign in with Apple
+            </button>
+        </div>
+    </div>
+
     <div class="container">
         <h1>🚗 CarBOOl Splitter 🚙</h1>
         <p class="subtitle">Who's riding with who?! 🤪</p>
@@ -526,6 +821,8 @@
         </div>
 
         <button class="save-btn" onclick="saveData()">✅ Auto Saved to Cloud</button>
+
+        <button class="share-btn" onclick="shareEvent()">🔗 Share with Friends</button>
 
         <button class="clear-btn" onclick="clearEverything()">🧹 Clear Everything</button>
     </div>
@@ -575,6 +872,7 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
@@ -592,6 +890,213 @@
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        const auth = firebase.auth();
+
+        // ============================================
+        // AUTHENTICATION SYSTEM
+        // ============================================
+
+        let currentUser = null;
+
+        // Monitor authentication state
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                currentUser = user;
+                console.log('User signed in:', user.email);
+
+                // Hide auth modal
+                document.getElementById('authOverlay').classList.remove('active');
+
+                // Show user profile
+                document.getElementById('userProfile').classList.add('show');
+                document.getElementById('userEmail').textContent = user.email;
+
+                // Initialize app with user's data
+                initializeUserData();
+            } else {
+                // No user signed in - show auth modal
+                currentUser = null;
+                console.log('No user signed in');
+
+                document.getElementById('authOverlay').classList.add('active');
+                document.getElementById('userProfile').classList.remove('show');
+            }
+        });
+
+        // Switch between login and signup tabs
+        function switchAuthTab(tab) {
+            const loginTab = document.querySelector('.auth-tab:nth-child(1)');
+            const signupTab = document.querySelector('.auth-tab:nth-child(2)');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const authError = document.getElementById('authError');
+
+            // Clear error
+            authError.classList.remove('show');
+
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+            } else {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+            }
+        }
+
+        // Show error message
+        function showAuthError(message) {
+            const authError = document.getElementById('authError');
+            authError.textContent = message;
+            authError.classList.add('show');
+        }
+
+        // Handle login
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                // Success - onAuthStateChanged will handle the rest
+            } catch (error) {
+                console.error('Login error:', error);
+                let errorMessage = 'Login failed. Please try again.';
+
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No account found with this email.';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Incorrect password.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'Too many failed attempts. Try again later.';
+                }
+
+                showAuthError(errorMessage);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        }
+
+        // Handle signup
+        async function handleSignup(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const signupBtn = document.getElementById('signupBtn');
+
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                showAuthError('Passwords do not match!');
+                return;
+            }
+
+            signupBtn.disabled = true;
+            signupBtn.textContent = 'Creating account...';
+
+            try {
+                await auth.createUserWithEmailAndPassword(email, password);
+                // Success - onAuthStateChanged will handle the rest
+            } catch (error) {
+                console.error('Signup error:', error);
+                let errorMessage = 'Signup failed. Please try again.';
+
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'This email is already registered. Try logging in instead.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Password should be at least 6 characters.';
+                }
+
+                showAuthError(errorMessage);
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.textContent = 'Create Account';
+            }
+        }
+
+        // Handle Google Sign In
+        async function handleGoogleSignIn() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+
+            try {
+                await auth.signInWithPopup(provider);
+                // Success - onAuthStateChanged will handle the rest
+            } catch (error) {
+                console.error('Google sign in error:', error);
+                let errorMessage = 'Google sign in failed. Please try again.';
+
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = 'Sign in cancelled.';
+                } else if (error.code === 'auth/popup-blocked') {
+                    errorMessage = 'Pop-up blocked. Please allow pop-ups and try again.';
+                }
+
+                showAuthError(errorMessage);
+            }
+        }
+
+        // Handle Apple Sign In
+        async function handleAppleSignIn() {
+            const provider = new firebase.auth.OAuthProvider('apple.com');
+
+            try {
+                await auth.signInWithPopup(provider);
+                // Success - onAuthStateChanged will handle the rest
+            } catch (error) {
+                console.error('Apple sign in error:', error);
+                let errorMessage = 'Apple sign in failed. Please try again.';
+
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = 'Sign in cancelled.';
+                } else if (error.code === 'auth/popup-blocked') {
+                    errorMessage = 'Pop-up blocked. Please allow pop-ups and try again.';
+                }
+
+                showAuthError(errorMessage);
+            }
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    await auth.signOut();
+                    // onAuthStateChanged will handle showing the auth modal
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    alert('Logout failed. Please try again.');
+                }
+            }
+        }
+
+        // Initialize user's data after authentication
+        function initializeUserData() {
+            // This will be called after user signs in
+            // Set up the database reference with user-specific path
+            eventId = getOrCreateEventId();
+            dbRef = database.ref(`users/${currentUser.uid}/events/${eventId}`);
+            loadData();
+        }
+
+        // ============================================
+        // END AUTHENTICATION SYSTEM
+        // ============================================
 
         // Get or create event ID from URL parameter
         let eventId = null;
@@ -931,6 +1436,137 @@
             }
         }
 
+        // Share event with friends
+        async function shareEvent() {
+            if (!currentUser) {
+                alert('You must be logged in to share events!');
+                return;
+            }
+
+            const eventName = document.getElementById('eventName').value.trim();
+            if (!eventName) {
+                alert('Please add an event name before sharing!');
+                return;
+            }
+
+            if (cars.length === 0 && unassignedPassengers.length === 0) {
+                alert('Please add some cars or friends before sharing!');
+                return;
+            }
+
+            try {
+                // Generate unique share ID
+                const shareId = generateShareId();
+
+                // Save event to shared location
+                const sharedData = {
+                    ownerId: currentUser.uid,
+                    ownerEmail: currentUser.email,
+                    eventName: sanitizeInput(eventName),
+                    cars: cars,
+                    unassignedPassengers: unassignedPassengers,
+                    lastUpdated: firebase.database.ServerValue.TIMESTAMP,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                };
+
+                await database.ref(`shared/${shareId}`).set(sharedData);
+
+                // Generate share URL
+                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
+
+                // Try to copy to clipboard
+                try {
+                    await navigator.clipboard.writeText(shareUrl);
+                    alert(`Share link copied to clipboard! 📋\n\n${shareUrl}\n\nAnyone with this link can view and edit this carpool.`);
+                } catch (clipboardError) {
+                    // Clipboard API failed, show link in prompt
+                    prompt('Share this link with your friends! (Copy it manually):', shareUrl);
+                }
+
+            } catch (error) {
+                console.error('Share error:', error);
+                alert('Failed to create share link. Please try again.');
+            }
+        }
+
+        // Generate random share ID
+        function generateShareId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let id = '';
+            for (let i = 0; i < 8; i++) {
+                id += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return id;
+        }
+
+        // Check if user is accessing a shared event
+        function checkForSharedEvent() {
+            const params = new URLSearchParams(window.location.search);
+            const shareId = params.get('share');
+
+            if (shareId) {
+                console.log('Loading shared event:', shareId);
+
+                // Load shared event data
+                database.ref(`shared/${shareId}`).on('value', (snapshot) => {
+                    const data = snapshot.val();
+
+                    if (!data) {
+                        alert('This shared event does not exist or has been deleted.');
+                        return;
+                    }
+
+                    // Load shared event into app
+                    document.getElementById('eventName').value = data.eventName || '';
+                    cars = data.cars || [];
+                    unassignedPassengers = data.unassignedPassengers || [];
+
+                    // Ensure all cars have passengers arrays
+                    cars.forEach(car => {
+                        if (!car.passengers) {
+                            car.passengers = [];
+                        }
+                    });
+
+                    renderCars();
+                    renderUnassigned();
+
+                    // Show sharing info
+                    const ownerInfo = data.ownerEmail ? ` (shared by ${data.ownerEmail})` : '';
+                    console.log(`Loaded shared event${ownerInfo}`);
+                });
+
+                // Override save function to save to shared location
+                const originalAutoSave = autoSave;
+                autoSave = function() {
+                    if (isSaving) return;
+                    isSaving = true;
+
+                    const eventName = document.getElementById('eventName').value.trim();
+                    const sanitizedEventName = eventName.length > 100
+                        ? sanitizeInput(eventName.substring(0, 100))
+                        : sanitizeInput(eventName);
+
+                    const updates = {
+                        eventName: sanitizedEventName,
+                        cars: cars,
+                        unassignedPassengers: unassignedPassengers,
+                        lastUpdated: firebase.database.ServerValue.TIMESTAMP
+                    };
+
+                    database.ref(`shared/${shareId}`).update(updates).then(() => {
+                        console.log('Shared event updated!');
+                        setTimeout(() => {
+                            isSaving = false;
+                        }, 500);
+                    }).catch(error => {
+                        console.error('Error updating shared event:', error);
+                        isSaving = false;
+                    });
+                };
+            }
+        }
+
         function loadData() {
             // Real-time listener - updates whenever anyone makes a change!
             dbRef.on('value', (snapshot) => {
@@ -979,8 +1615,8 @@
             if (e.key === 'Enter') addPassenger();
         });
 
-        // Load saved data on page load
-        loadData();
+        // Check for shared event on page load
+        checkForSharedEvent();
 
         // Initial render
         renderCars();
