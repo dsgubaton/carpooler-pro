@@ -568,6 +568,11 @@
         <div class="music-prompt" id="musicPrompt">🎵 Tap any button to start music!</div>
     </div>
 
+    <!-- Hidden Audio Element for 8-bit MP3 -->
+    <audio id="mp3Player" loop style="display:none;">
+        <source src="the-return-of-the-8-bit-era-301292.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -1306,11 +1311,13 @@
             initTetris();
             tetrisLoop();
 
-            // Music should already be playing from cookie click
-            // But try to start if it somehow didn't
-            if (!musicStarted && audioContext) {
-                playTetrisMusic();
-            }
+            // Play the 8-bit MP3 track
+            const mp3Player = document.getElementById('mp3Player');
+            mp3Player.volume = 0.3; // Set volume to 30%
+            mp3Player.play().catch(err => {
+                console.log('Audio play failed:', err);
+                document.getElementById('musicPrompt').classList.add('show');
+            });
         }
 
         function closeTetris() {
@@ -1322,7 +1329,11 @@
             if (tetrisGameLoop) {
                 cancelAnimationFrame(tetrisGameLoop);
             }
-            stopTetrisMusic();
+
+            // Stop the MP3 player
+            const mp3Player = document.getElementById('mp3Player');
+            mp3Player.pause();
+            mp3Player.currentTime = 0;
         }
 
         // Mobile touch controls - also resume audio on first touch (iOS fix)
@@ -1330,19 +1341,14 @@
             return function(e) {
                 e.preventDefault();
 
-                // Resume audio context on first touch (iOS requirement)
-                if (audioContext && !musicStarted) {
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume().then(() => {
-                            if (!isMusicPlaying) {
-                                playTetrisMusic();
-                                document.getElementById('musicPrompt').classList.remove('show');
-                            }
-                        });
-                    } else if (!isMusicPlaying) {
-                        playTetrisMusic();
+                // Try to play MP3 on first touch (iOS requirement)
+                const mp3Player = document.getElementById('mp3Player');
+                if (mp3Player.paused) {
+                    mp3Player.play().then(() => {
                         document.getElementById('musicPrompt').classList.remove('show');
-                    }
+                    }).catch(err => {
+                        console.log('Audio play failed on touch:', err);
+                    });
                 }
 
                 if (tetrisGameRunning) callback();

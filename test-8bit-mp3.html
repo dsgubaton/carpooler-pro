@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test 8-Bit Era MP3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 500px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        .status {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 The Return of the 8-Bit Era</h1>
+        <p style="color: #666; margin-bottom: 30px;">Retro Gaming Music</p>
+
+        <button onclick="playMusic()">▶️ Play</button>
+        <button onclick="pauseMusic()">⏸️ Pause</button>
+        <button onclick="stopMusic()">⏹️ Stop</button>
+
+        <div class="status" id="status">Ready to play!</div>
+
+        <audio id="musicPlayer" loop>
+            <source src="the-return-of-the-8-bit-era-301292.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+
+    <script>
+        const audio = document.getElementById('musicPlayer');
+        const status = document.getElementById('status');
+
+        function playMusic() {
+            audio.play().then(() => {
+                status.textContent = '🎵 Now Playing...';
+            }).catch(error => {
+                status.textContent = '❌ Error: ' + error.message;
+                console.error('Playback error:', error);
+            });
+        }
+
+        function pauseMusic() {
+            audio.pause();
+            status.textContent = '⏸️ Paused';
+        }
+
+        function stopMusic() {
+            audio.pause();
+            audio.currentTime = 0;
+            status.textContent = '⏹️ Stopped';
+        }
+
+        // Show loading status
+        audio.addEventListener('loadstart', () => {
+            status.textContent = '⏳ Loading...';
+        });
+
+        audio.addEventListener('canplay', () => {
+            status.textContent = '✅ Ready to play!';
+        });
+
+        audio.addEventListener('error', (e) => {
+            status.textContent = '❌ Failed to load MP3 file';
+            console.error('Audio error:', e);
+        });
+    </script>
+</body>
+</html>
