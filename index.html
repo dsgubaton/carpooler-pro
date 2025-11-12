@@ -1003,16 +1003,6 @@
             e.stopPropagation(); // Prevent event bubbling
             cookieClickCount++;
 
-            // Initialize audio context on first click (iOS requirement)
-            if (cookieClickCount === 1 && !audioContext) {
-                try {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    console.log('Audio context created on cookie click');
-                } catch(e) {
-                    console.log('Could not create audio context:', e);
-                }
-            }
-
             // Reset timer - if you don't complete within 5 seconds, reset
             clearTimeout(cookieResetTimer);
             cookieResetTimer = setTimeout(() => {
@@ -1028,17 +1018,6 @@
                 if (cookieClickCount === 6) {
                     // Spell complete! Launch Tetris
                     clearTimeout(cookieResetTimer);
-
-                    // Start music immediately on 6th click (iOS needs direct user gesture)
-                    if (audioContext) {
-                        if (audioContext.state === 'suspended') {
-                            audioContext.resume().then(() => {
-                                playTetrisMusic();
-                            });
-                        } else {
-                            playTetrisMusic();
-                        }
-                    }
 
                     setTimeout(() => {
                         tetrisRevealDiv.textContent = '';
@@ -1325,7 +1304,6 @@
             document.getElementById('mobileControls').classList.remove('active');
             document.getElementById('musicPrompt').classList.remove('show');
             tetrisGameRunning = false;
-            musicStarted = false;
             if (tetrisGameLoop) {
                 cancelAnimationFrame(tetrisGameLoop);
             }
@@ -1359,124 +1337,6 @@
         document.getElementById('btnRight').addEventListener('touchstart', handleTouchControl(() => movePiece(1)));
         document.getElementById('btnDown').addEventListener('touchstart', handleTouchControl(() => dropPiece()));
         document.getElementById('btnRotate').addEventListener('touchstart', handleTouchControl(() => rotatePiece()));
-
-        // Tetris Music using Web Audio API
-        let audioContext;
-        let musicGainNode;
-        let isMusicPlaying = false;
-        let musicStarted = false;
-
-        function playTetrisMusic() {
-            if (isMusicPlaying) return;
-
-            try {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-
-                // iOS requires user interaction - resume if suspended
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        startMusic();
-                    });
-                } else {
-                    startMusic();
-                }
-            } catch(e) {
-                console.log('Audio not supported:', e);
-            }
-        }
-
-        function startMusic() {
-            if (isMusicPlaying) return;
-
-            musicGainNode = audioContext.createGain();
-            musicGainNode.gain.value = 0.08; // Lower volume for mobile
-            musicGainNode.connect(audioContext.destination);
-
-            isMusicPlaying = true;
-            musicStarted = true;
-
-            // Hide the music prompt
-            document.getElementById('musicPrompt').classList.remove('show');
-
-            playTetrisTheme();
-            console.log('Tetris music started!');
-        }
-
-        function stopTetrisMusic() {
-            isMusicPlaying = false;
-            if (audioContext && audioContext.state !== 'closed') {
-                audioContext.close().then(() => {
-                    audioContext = null;
-                });
-            }
-        }
-
-        // Extended Tetris theme (Korobeiniki)
-        function playTetrisTheme() {
-            if (!isMusicPlaying) return;
-
-            const notes = [
-                // Part 1
-                {freq: 659.25, duration: 0.4}, // E
-                {freq: 493.88, duration: 0.2}, // B
-                {freq: 523.25, duration: 0.2}, // C
-                {freq: 587.33, duration: 0.4}, // D
-                {freq: 523.25, duration: 0.2}, // C
-                {freq: 493.88, duration: 0.2}, // B
-                {freq: 440.00, duration: 0.4}, // A
-                {freq: 440.00, duration: 0.2}, // A
-                {freq: 523.25, duration: 0.2}, // C
-                {freq: 659.25, duration: 0.4}, // E
-                {freq: 587.33, duration: 0.2}, // D
-                {freq: 523.25, duration: 0.2}, // C
-                {freq: 493.88, duration: 0.6}, // B
-                {freq: 523.25, duration: 0.2}, // C
-                {freq: 587.33, duration: 0.4}, // D
-                {freq: 659.25, duration: 0.4}, // E
-                {freq: 523.25, duration: 0.4}, // C
-                {freq: 440.00, duration: 0.4}, // A
-                {freq: 440.00, duration: 0.4}, // A
-                {freq: 0, duration: 0.2}, // Rest
-                // Part 2
-                {freq: 587.33, duration: 0.4}, // D
-                {freq: 698.46, duration: 0.2}, // F
-                {freq: 880.00, duration: 0.4}, // A
-                {freq: 783.99, duration: 0.2}, // G
-                {freq: 698.46, duration: 0.2}, // F
-                {freq: 659.25, duration: 0.6}, // E
-                {freq: 523.25, duration: 0.2}, // C
-                {freq: 659.25, duration: 0.4}, // E
-                {freq: 587.33, duration: 0.2}, // D
-                {freq: 523.25, duration: 0.2}, // C
-                {freq: 493.88, duration: 0.4}, // B
-                {freq: 493.88, duration: 0.2}, // B
-                {freq: 523.25, duration: 0.2}, // C
-                {freq: 587.33, duration: 0.4}, // D
-                {freq: 659.25, duration: 0.4}, // E
-                {freq: 523.25, duration: 0.4}, // C
-                {freq: 440.00, duration: 0.4}, // A
-                {freq: 440.00, duration: 0.4}, // A
-                {freq: 0, duration: 0.2} // Rest
-            ];
-
-            let time = audioContext.currentTime;
-            notes.forEach(note => {
-                const osc = audioContext.createOscillator();
-                osc.connect(musicGainNode);
-                osc.frequency.value = note.freq;
-                osc.type = 'square'; // Game Boy sound
-                osc.start(time);
-                osc.stop(time + note.duration);
-                time += note.duration;
-            });
-
-            // Loop the music
-            setTimeout(() => {
-                if (isMusicPlaying) playTetrisTheme();
-            }, time * 1000 - audioContext.currentTime * 1000);
-        }
 
         // Desktop shortcut: Press 'T' three times quickly
         let tPressCount = 0;
