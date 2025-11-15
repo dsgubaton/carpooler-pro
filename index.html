@@ -79,11 +79,29 @@
         </div>
     </div>
 
-    <!-- Cookie Menu -->
+    <!-- Cookie Menu (Floating Action Button Menu) -->
     <div class="cookie-menu" id="cookieMenu">
-        <button class="menu-share" onclick="shareEvent(); closeCookieMenu();">🔗 Share with Friends</button>
-        <button class="menu-clear" onclick="clearEverything(); closeCookieMenu();">🧹 Clear Everything</button>
-        <button class="menu-logout" onclick="handleLogout()">🚪 Logout</button>
+        <div class="cookie-menu-header">Quick Actions</div>
+        <button class="menu-item" onclick="shareEvent(); closeCookieMenu();">
+            <span class="menu-icon">🔗</span>
+            <span class="menu-text">Share with Friends</span>
+        </button>
+        <button class="menu-item" onclick="randomizeCars(); closeCookieMenu();">
+            <span class="menu-icon">🎲</span>
+            <span class="menu-text">Randomize Cars</span>
+        </button>
+        <button class="menu-item" onclick="switchTab(3); closeCookieMenu();">
+            <span class="menu-icon">💰</span>
+            <span class="menu-text">Trip Costs</span>
+        </button>
+        <button class="menu-item" onclick="toggleDarkMode(); closeCookieMenu();">
+            <span class="menu-icon">🌙</span>
+            <span class="menu-text">Toggle Dark Mode</span>
+        </button>
+        <button class="menu-item menu-logout" onclick="handleLogout()">
+            <span class="menu-icon">🚪</span>
+            <span class="menu-text">Log Out</span>
+        </button>
         <button class="menu-close" onclick="closeCookieMenu()">✖ Close</button>
     </div>
 

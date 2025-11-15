@@ -12,6 +12,73 @@ body {
     min-height: 100vh;
     padding: 20px;
     color: #333;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background: linear-gradient(124deg, #1a1a2e, #16213e, #0f3460, #533483, #1a1a2e, #16213e, #0f3460, #533483, #1a1a2e);
+    background-size: 1800% 1800%;
+    animation: rainbow 8s ease infinite;
+    color: #e0e0e0;
+}
+
+body.dark-mode .section {
+    background: rgba(30, 30, 45, 0.85);
+    color: #e0e0e0;
+}
+
+body.dark-mode .event-input {
+    background: rgba(40, 40, 60, 0.75);
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+body.dark-mode .detail-input,
+body.dark-mode .detail-textarea {
+    background: rgba(40, 40, 60, 0.9);
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .car-card {
+    background: linear-gradient(135deg, #2d2d44 0%, #3d3d5c 100%);
+    color: #e0e0e0;
+}
+
+body.dark-mode .passenger-tag {
+    background: #4a5588;
+}
+
+body.dark-mode .unassigned-tag {
+    background: #884a5a;
+}
+
+body.dark-mode .cookie-menu {
+    background: #2d2d44;
+}
+
+body.dark-mode .cookie-menu-header {
+    background: linear-gradient(135deg, #4a5588 0%, #5a4a88 100%);
+}
+
+body.dark-mode .menu-item {
+    background: #2d2d44;
+    color: #e0e0e0;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .menu-item:hover {
+    background: #3d3d5c;
+}
+
+body.dark-mode .menu-close {
+    background: #1a1a2e;
+    color: #999;
+}
+
+body.dark-mode .menu-close:hover {
+    background: #0f0f1a;
 }
 
 @keyframes rainbow {
@@ -1230,73 +1297,115 @@ button:active {
     transform: none;
 }
 
-/* Cookie Menu */
+/* Cookie Menu - Floating Action Button Style */
 .cookie-menu {
     display: none;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.95);
+    bottom: 80px;
+    right: 20px;
+    background: white;
     border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    padding: 0;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
     z-index: 10001;
-    min-width: 250px;
+    min-width: 280px;
+    animation: slideUpFade 0.3s ease;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .cookie-menu.show {
     display: block;
 }
 
-.cookie-menu button {
+.cookie-menu-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 15px 15px 0 0;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+}
+
+.menu-item {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+}
+
+.menu-item:hover {
+    background: #f8f9ff;
+    transform: translateX(5px);
+}
+
+.menu-item:active {
+    background: #f0f0f0;
+}
+
+.menu-icon {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+.menu-text {
+    flex: 1;
+}
+
+.menu-logout {
+    color: #ff6b6b;
+    border-bottom: none;
+    border-radius: 0 0 0 0;
+}
+
+.menu-logout:hover {
+    background: #fff5f5;
+}
+
+.menu-close {
     width: 100%;
     padding: 12px;
-    margin: 5px 0;
     border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.cookie-menu .menu-logout {
-    background: #ff6b6b;
-    color: white;
-}
-
-.cookie-menu .menu-logout:hover {
-    background: #ee5a52;
-    transform: scale(1.05);
-}
-
-.cookie-menu .menu-share {
-    background: #667eea;
-    color: white;
-}
-
-.cookie-menu .menu-share:hover {
-    background: #764ba2;
-    transform: scale(1.05);
-}
-
-.cookie-menu .menu-clear {
-    background: #ff9800;
-    color: white;
-}
-
-.cookie-menu .menu-clear:hover {
-    background: #e68900;
-    transform: scale(1.05);
-}
-
-.cookie-menu .menu-close {
-    background: #e0e0e0;
+    border-radius: 0 0 15px 15px;
+    background: #f5f5f5;
     color: #666;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
 }
 
-.cookie-menu .menu-close:hover {
-    background: #ccc;
-    transform: scale(1.05);
+.menu-close:hover {
+    background: #e0e0e0;
+}
+
+/* Mobile responsive - center menu on small screens */
+@media (max-width: 600px) {
+    .cookie-menu {
+        right: 50%;
+        transform: translateX(50%);
+        min-width: 90%;
+        max-width: 320px;
+    }
 }

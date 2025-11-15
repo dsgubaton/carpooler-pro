@@ -1946,6 +1946,52 @@ function closeCookieMenu() {
     cookieMenu.classList.remove('show');
 }
 
+// Toggle Dark Mode
+function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+
+    // Save preference to localStorage
+    const isDarkMode = body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+
+    // Update menu icon dynamically
+    const darkModeBtn = document.querySelector('.menu-item [onclick*="toggleDarkMode"]');
+    if (darkModeBtn) {
+        const iconSpan = darkModeBtn.querySelector('.menu-icon');
+        const textSpan = darkModeBtn.querySelector('.menu-text');
+        if (isDarkMode) {
+            iconSpan.textContent = '☀️';
+            textSpan.textContent = 'Toggle Light Mode';
+        } else {
+            iconSpan.textContent = '🌙';
+            textSpan.textContent = 'Toggle Dark Mode';
+        }
+    }
+}
+
+// Load dark mode preference on page load
+function loadDarkModePreference() {
+    const darkMode = localStorage.getItem('darkMode');
+    if (darkMode === 'enabled') {
+        document.body.classList.add('dark-mode');
+
+        // Update menu text if it exists
+        setTimeout(() => {
+            const darkModeBtn = document.querySelector('.menu-item [onclick*="toggleDarkMode"]');
+            if (darkModeBtn) {
+                const iconSpan = darkModeBtn.querySelector('.menu-icon');
+                const textSpan = darkModeBtn.querySelector('.menu-text');
+                iconSpan.textContent = '☀️';
+                textSpan.textContent = 'Toggle Light Mode';
+            }
+        }, 100);
+    }
+}
+
+// Initialize dark mode on load
+loadDarkModePreference();
+
 function moveCookie() {
     x += xSpeed;
     y += ySpeed;
