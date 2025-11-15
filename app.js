@@ -35,14 +35,24 @@ function switchTab(tabIndex) {
         tab.classList.remove('active');
     });
 
-    // Remove active class from all buttons
+    // Remove active class from all buttons and dots
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
+    });
+    document.querySelectorAll('.dot').forEach(dot => {
+        dot.classList.remove('active');
     });
 
     // Show selected tab
     document.getElementById(`tab-content-${tabIndex}`).classList.add('active');
-    document.getElementById(`tab-${tabIndex}`).classList.add('active');
+
+    // Update button if it exists
+    const tabBtn = document.getElementById(`tab-${tabIndex}`);
+    if (tabBtn) tabBtn.classList.add('active');
+
+    // Update dot indicator
+    const dot = document.getElementById(`dot-${tabIndex}`);
+    if (dot) dot.classList.add('active');
 
     currentTab = tabIndex;
 }
@@ -1075,13 +1085,14 @@ function calculateCosts() {
         return;
     }
 
-    const totalCosts = (gasCost * cars.length) + parkingFee + tollsFees;
+    const totalCosts = (gasCost * cars.length) + (parkingFee * cars.length) + (tollsFees * cars.length);
     let breakdownHTML = '';
 
     // Calculate per-car costs
     cars.forEach((car, index) => {
         let carCost = 0;
         let perPassengerCost = 0;
+        const perCarTotal = gasCost + parkingFee + tollsFees;
 
         if (splitMethod === 'passengers-only') {
             // Passengers split everything
@@ -1090,13 +1101,9 @@ function calculateCosts() {
                 carCost = perPassengerCost * car.passengers.length;
             }
         } else if (splitMethod === 'per-car-gas') {
-            // Each car's passengers split THAT car's gas ⚡ Perfect for EVs!
-            const sharedCosts = parkingFee + tollsFees;
-            const sharedPerPerson = sharedCosts / totalPeople;
-
+            // Each car's passengers split THAT car's costs (gas, parking, tolls) ⚡ Perfect for EVs!
             if (car.passengers.length > 0) {
-                const gasPerPassengerInThisCar = gasCost / car.passengers.length;
-                perPassengerCost = gasPerPassengerInThisCar + sharedPerPerson;
+                perPassengerCost = perCarTotal / car.passengers.length;
                 carCost = perPassengerCost * car.passengers.length;
             } else {
                 perPassengerCost = 0;
@@ -1108,13 +1115,13 @@ function calculateCosts() {
             carCost = perPassengerCost * (car.passengers.length + 1); // +1 for driver
         } else if (splitMethod === 'passengers-gas') {
             // Passengers split gas, everyone splits parking/tolls
-            const sharedCosts = parkingFee + tollsFees;
-            const sharedPerPerson = sharedCosts / totalPeople;
+            const sharedCostsPerCar = parkingFee + tollsFees;
+            const sharedCostsTotal = sharedCostsPerCar * cars.length;
+            const sharedPerPerson = sharedCostsTotal / totalPeople;
 
             if (totalPassengers > 0) {
                 const gasPerPassenger = (gasCost * cars.length) / totalPassengers;
                 perPassengerCost = gasPerPassenger + sharedPerPerson;
-                const driverShareOfShared = sharedPerPerson;
                 carCost = (perPassengerCost * car.passengers.length);
             } else {
                 perPassengerCost = sharedPerPerson;
@@ -1231,8 +1238,8 @@ function copyGroupChatSummary() {
     const tollsFees = parseFloat(document.getElementById('tollsFees').value) || 0;
 
     if (gasCost > 0 || parkingFee > 0 || tollsFees > 0) {
-        summary += `💵 Total Trip Cost: $${((gasCost * cars.length) + parkingFee + tollsFees).toFixed(2)}\n`;
-        summary += `   ⛽ Gas: $${gasCost}/car | 🅿️ Parking: $${parkingFee} | 🎫 Tolls: $${tollsFees}\n`;
+        summary += `💵 Total Trip Cost: $${((gasCost * cars.length) + (parkingFee * cars.length) + (tollsFees * cars.length)).toFixed(2)}\n`;
+        summary += `   ⛽ Gas: $${gasCost}/car | 🅿️ Parking: $${parkingFee}/car | 🎫 Tolls: $${tollsFees}/car\n`;
     }
 
     // Copy to clipboard
