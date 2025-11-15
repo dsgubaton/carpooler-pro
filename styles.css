@@ -736,7 +736,8 @@ button:active {
     z-index: 10002;
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
     animation: spin 2s linear infinite;
-    transition: opacity 0.3s, filter 0.3s;
+    transition: opacity 0.3s;
+    will-change: transform;
 }
 
 .dancing-cookie.hidden {
@@ -749,6 +750,7 @@ body.dark-mode .dancing-cookie {
     filter: drop-shadow(0 0 20px rgba(255, 200, 100, 0.8))
             drop-shadow(0 0 40px rgba(255, 150, 50, 0.6))
             drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
@@ -1419,8 +1421,7 @@ body.dark-mode .dancing-cookie {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s;
-    background: white;
-    color: #333;
+    color: white;
 }
 
 .cookie-menu-btn:hover {
@@ -1431,18 +1432,41 @@ body.dark-mode .dancing-cookie {
     transform: scale(0.95);
 }
 
+/* Individual button colors */
 .menu-share {
     background: #667eea;
-    color: white;
 }
 
 .menu-share:hover {
     background: #764ba2;
 }
 
+.cookie-menu-btn:nth-child(2) {
+    background: #f093fb;
+}
+
+.cookie-menu-btn:nth-child(2):hover {
+    background: #f5576c;
+}
+
+.cookie-menu-btn:nth-child(3) {
+    background: #4facfe;
+}
+
+.cookie-menu-btn:nth-child(3):hover {
+    background: #00f2fe;
+}
+
+#darkModeToggle {
+    background: #2d3561;
+}
+
+#darkModeToggle:hover {
+    background: #3d4571;
+}
+
 .menu-logout {
     background: #ff6b6b;
-    color: white;
 }
 
 .menu-logout:hover {
@@ -1450,40 +1474,57 @@ body.dark-mode .dancing-cookie {
 }
 
 .menu-close {
-    background: #e0e0e0;
-    color: #666;
+    background: #95a5a6;
+    color: white;
 }
 
 .menu-close:hover {
-    background: #ccc;
+    background: #7f8c8d;
 }
 
 /* Dark mode menu styling */
 body.dark-mode .cookie-menu {
     background: rgba(45, 45, 68, 0.95);
-}
-
-body.dark-mode .cookie-menu-btn {
-    background: #3d3d5c;
-    color: #e0e0e0;
-}
-
-body.dark-mode .cookie-menu-btn:hover {
-    background: #4d4d6c;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 body.dark-mode .menu-share {
     background: #4a5588;
-    color: white;
 }
 
 body.dark-mode .menu-share:hover {
     background: #5a6598;
 }
 
+body.dark-mode .cookie-menu-btn:nth-child(2) {
+    background: #c77ddb;
+}
+
+body.dark-mode .cookie-menu-btn:nth-child(2):hover {
+    background: #d78deb;
+}
+
+body.dark-mode .cookie-menu-btn:nth-child(3) {
+    background: #3d8cce;
+}
+
+body.dark-mode .cookie-menu-btn:nth-child(3):hover {
+    background: #4d9cde;
+}
+
+body.dark-mode #darkModeToggle {
+    background: #3d4571;
+}
+
+body.dark-mode #darkModeToggle:hover {
+    background: #4d5581;
+}
+
 body.dark-mode .menu-logout {
     background: #884a5a;
-    color: white;
 }
 
 body.dark-mode .menu-logout:hover {
@@ -1491,10 +1532,9 @@ body.dark-mode .menu-logout:hover {
 }
 
 body.dark-mode .menu-close {
-    background: #1a1a2e;
-    color: #999;
+    background: #5a5a7a;
 }
 
 body.dark-mode .menu-close:hover {
-    background: #0f0f1a;
+    background: #6a6a8a;
 }
