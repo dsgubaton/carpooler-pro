@@ -520,6 +520,10 @@ function addCar() {
 
     const driverName = document.getElementById('driverName').value.trim();
     const seatCount = parseInt(document.getElementById('seatCount').value);
+    const carNickname = document.getElementById('carNickname').value.trim();
+    const playlistVibe = document.getElementById('playlistVibe').value;
+    const energyLevel = document.getElementById('energyLevel').value;
+    const singAlong = document.getElementById('singAlong').checked;
 
     // Security: Validate driver name
     if (!validateInput(driverName, 50, 'driver name')) {
@@ -534,17 +538,26 @@ function addCar() {
 
     // Security: Sanitize driver name before storing
     const sanitizedName = sanitizeInput(driverName);
+    const sanitizedNickname = carNickname ? sanitizeInput(carNickname) : '';
 
     cars.push({
         id: Date.now(),
         driver: sanitizedName,
         seats: seatCount,
         passengers: [],
-        emoji: selectedEmoji
+        emoji: selectedEmoji,
+        nickname: sanitizedNickname,
+        playlistVibe: playlistVibe,
+        energyLevel: energyLevel,
+        singAlong: singAlong
     });
 
     document.getElementById('driverName').value = '';
     document.getElementById('seatCount').value = '';
+    document.getElementById('carNickname').value = '';
+    document.getElementById('playlistVibe').selectedIndex = 0;
+    document.getElementById('energyLevel').selectedIndex = 0;
+    document.getElementById('singAlong').checked = false;
 
     renderCars();
     autoSave();
@@ -662,13 +675,26 @@ function renderCars() {
         const canEditCar = !currentShareId || isEventOwner || isCarOwner;
         const canDeleteCar = !currentShareId || isEventOwner || isCarOwner;
 
+        // Build vibe pills
+        let vibePills = '';
+        if (car.playlistVibe) {
+            vibePills += `<span class="vibe-pill">🎶 ${car.playlistVibe}</span>`;
+        }
+        if (car.energyLevel) {
+            vibePills += `<span class="vibe-pill">${car.energyLevel}</span>`;
+        }
+        if (car.singAlong) {
+            vibePills += `<span class="vibe-pill">🔊 Sing-along!</span>`;
+        }
+
         return `
             <div class="car-card ${isFull ? 'full' : ''}" onclick="handleCarClick(event, ${car.id})">
                 ${canDeleteCar ? `<button class="delete-car" onclick="event.stopPropagation(); deleteCar(${car.id})">×</button>` : ''}
                 <div class="car-visual">${car.emoji}</div>
                 <div class="car-info">
-                    Driver: ${car.driver}${isCarOwner ? ' <span style="color: #4CAF50; font-size: 0.8em;">(You)</span>' : ''}
+                    Driver: ${car.driver}${car.nickname ? ` – <em>'${car.nickname}'</em>` : ''}${isCarOwner ? ' <span style="color: #4CAF50; font-size: 0.8em;">(You)</span>' : ''}
                 </div>
+                ${vibePills ? `<div class="vibe-pills-container">${vibePills}</div>` : ''}
                 <div class="seats-info">
                     ${car.passengers.length} / ${canEditCar ? `<span class="editable-seats" onclick="event.stopPropagation(); editSeats(${car.id})">${car.seats}</span>` : car.seats} seats filled ${isFull ? '<span style="color: #f44336; font-weight: bold;">(FULL!)</span>' : ''}
                 </div>
@@ -1210,7 +1236,19 @@ function copyGroupChatSummary() {
 
     // Car assignments
     cars.forEach((car, index) => {
-        summary += `${car.emoji} ${car.driver}'s car (${car.passengers.length}/${car.seats} seats):\n`;
+        // Car name line with optional nickname
+        const carName = car.nickname ? `${car.driver} – '${car.nickname}'` : car.driver;
+        summary += `${car.emoji} ${carName}'s car (${car.passengers.length}/${car.seats} seats):\n`;
+
+        // Add vibes if any are set
+        let vibes = [];
+        if (car.playlistVibe) vibes.push(`🎶 ${car.playlistVibe}`);
+        if (car.energyLevel) vibes.push(car.energyLevel);
+        if (car.singAlong) vibes.push('🔊 Sing-along!');
+
+        if (vibes.length > 0) {
+            summary += `   Vibe: ${vibes.join(' | ')}\n`;
+        }
 
         if (car.passengers.length > 0) {
             const passengerNames = car.passengers.map(p => p.name).join(', ');

@@ -331,6 +331,25 @@ button:active {
     margin-bottom: 10px;
 }
 
+.vibe-pills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.vibe-pill {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    font-weight: 600;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
 .passengers-list {
     display: flex;
     flex-wrap: wrap;

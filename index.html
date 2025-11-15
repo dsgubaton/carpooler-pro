@@ -217,8 +217,45 @@
                     <div class="input-group">
                         <input type="text" id="driverName" placeholder="Driver's name">
                         <input type="number" id="seatCount" placeholder="# of seats" min="1" max="20">
-                        <button onclick="addCar()">Add Car</button>
                     </div>
+
+                    <div class="detail-group">
+                        <label>🚙 Car Nickname (optional)</label>
+                        <input type="text" id="carNickname" class="detail-input" placeholder="e.g., The Snack Wagon">
+                    </div>
+
+                    <div class="detail-group">
+                        <label>🎶 Playlist Vibe</label>
+                        <select id="playlistVibe" class="detail-input" style="cursor: pointer;">
+                            <option value="">No preference</option>
+                            <option value="Taylor Swift">Taylor Swift</option>
+                            <option value="EDM">EDM</option>
+                            <option value="Hip Hop">Hip Hop</option>
+                            <option value="Rock">Rock</option>
+                            <option value="Country">Country</option>
+                            <option value="Podcasts">Podcasts only</option>
+                            <option value="Silent">Silent ride</option>
+                        </select>
+                    </div>
+
+                    <div class="detail-group">
+                        <label>😅 Energy Level</label>
+                        <select id="energyLevel" class="detail-input" style="cursor: pointer;">
+                            <option value="">No preference</option>
+                            <option value="Chaos">Chaos 🤪</option>
+                            <option value="Chill">Chill 😎</option>
+                            <option value="Family-friendly">Family-friendly 👨‍👩‍👧</option>
+                        </select>
+                    </div>
+
+                    <div class="detail-group">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="singAlong" style="width: auto; cursor: pointer;">
+                            <span>🔊 Sing-along encouraged?</span>
+                        </label>
+                    </div>
+
+                    <button onclick="addCar()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px;">Add Car</button>
                 </div>
 
                 <div class="section">
