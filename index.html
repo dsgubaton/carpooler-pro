@@ -48,16 +48,83 @@
         }
 
         .section {
-            background: rgba(255, 255, 255, 0.85);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
             border-radius: 20px;
             padding: 25px;
             margin-bottom: 20px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            backdrop-filter: blur(10px);
         }
 
-        /* Event Details Styling */
-        .event-details-section {
-            background: rgba(255, 255, 255, 0.9);
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .tab-navigation::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .swipe-container {
+            position: relative;
+            overflow: hidden;
+            touch-action: pan-y pinch-zoom;
         }
 
         .date-time-row {
@@ -1307,7 +1374,19 @@
 
         <input type="text" id="eventName" class="event-input" placeholder="Event Name (e.g., Beach Trip!)">
 
-        <!-- Event Details Section -->
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab(0)" id="tab-0">📋 Event</button>
+            <button class="tab-btn" onclick="switchTab(1)" id="tab-1">➕ Setup</button>
+            <button class="tab-btn" onclick="switchTab(2)" id="tab-2">🚗 Lineup</button>
+            <button class="tab-btn" onclick="switchTab(3)" id="tab-3">💰 Costs</button>
+        </div>
+
+        <!-- Swipeable Container -->
+        <div class="swipe-container" id="swipeContainer">
+            <!-- TAB 1: Event Details -->
+            <div class="tab-content active" id="tab-content-0">
+                <!-- Event Details Section -->
         <div class="section event-details-section">
             <h2>📋 Event Details</h2>
 
@@ -1344,9 +1423,49 @@
                 <input type="number" id="maxAttendees" class="detail-input" placeholder="e.g., 20" min="1">
             </div>
         </div>
+            </div>
+            <!-- End TAB 1 -->
 
-        <!-- Trip Costs Section -->
-        <div class="section" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border: 2px solid #667eea;">
+            <!-- TAB 2: Setup (Add Car & Add Friend) -->
+            <div class="tab-content" id="tab-content-1">
+                <div class="section">
+                    <h2>Add Car 🚗</h2>
+                    <div class="input-group">
+                        <input type="text" id="driverName" placeholder="Driver's name">
+                        <input type="number" id="seatCount" placeholder="# of seats" min="1" max="20">
+                        <button onclick="addCar()">Add Car</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Add Friend 👫</h2>
+                    <div class="input-group">
+                        <input type="text" id="passengerName" placeholder="Friend's nickname">
+                        <button onclick="addPassenger()">Add Friend</button>
+                    </div>
+
+                    <h3 style="margin-top: 20px; color: #667eea; font-weight: bold;">Unassigned Friends:</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; margin-top: 10px; flex-wrap: wrap;">
+                        <button class="auto-assign-btn" onclick="autoFillCars()" style="flex: 1; min-width: 150px; padding: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">✨ Auto-fill Cars</button>
+                        <button class="auto-assign-btn" onclick="randomizeCars()" style="flex: 1; min-width: 150px; padding: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">🎲 Randomize Cars</button>
+                    </div>
+                    <div class="unassigned-passengers" id="unassignedList"></div>
+                </div>
+            </div>
+            <!-- End TAB 2 -->
+
+            <!-- TAB 3: Carpool Lineup -->
+            <div class="tab-content" id="tab-content-2">
+                <div class="section">
+                    <h2>Carpool Lineup ✅</h2>
+                    <div class="cars-container" id="carsContainer"></div>
+                </div>
+            </div>
+            <!-- End TAB 3 -->
+
+            <!-- TAB 4: Trip Costs -->
+            <div class="tab-content" id="tab-content-3">
+        <div class="section">
             <h2>💰 Trip Costs</h2>
             <p style="color: #666; font-size: 14px; margin-bottom: 15px;">Split gas, parking, tolls fairly among passengers</p>
 
@@ -1369,9 +1488,16 @@
                 <label>🤝 Split Method</label>
                 <select id="splitMethod" class="detail-input" onchange="calculateCosts()" style="cursor: pointer;">
                     <option value="passengers-only">Passengers split all costs (Drivers pay nothing)</option>
+                    <option value="per-car-gas">Each car's passengers split that car's gas (⚡ EV-friendly!)</option>
                     <option value="everyone">Everyone splits equally (including drivers)</option>
                     <option value="passengers-gas">Passengers split gas, Everyone splits parking/tolls</option>
                 </select>
+            </div>
+
+            <div class="detail-group">
+                <label>💸 Driver's Venmo (optional)</label>
+                <input type="text" id="venmoUsername" class="detail-input" placeholder="e.g., @yourvenmo">
+                <p style="font-size: 12px; color: #999; margin-top: 5px;">Add your Venmo for easy payments</p>
             </div>
 
             <div id="costSummary" style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px; display: none;">
@@ -1383,35 +1509,11 @@
                 📋 Copy for Group Chat
             </button>
         </div>
-
-        <div class="section">
-            <h2>Add Car 🚗</h2>
-            <div class="input-group">
-                <input type="text" id="driverName" placeholder="Driver's name">
-                <input type="number" id="seatCount" placeholder="# of seats" min="1" max="20">
-                <button onclick="addCar()">Add Car</button>
             </div>
-        </div>
+            <!-- End TAB 4 -->
 
-        <div class="section">
-            <h2>Add Friend 👫</h2>
-            <div class="input-group">
-                <input type="text" id="passengerName" placeholder="Friend's nickname">
-                <button onclick="addPassenger()">Add Friend</button>
-            </div>
-
-            <h3 style="margin-top: 20px; color: #ff6b6b;">Unassigned Friends:</h3>
-            <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                <button class="auto-assign-btn" onclick="autoFillCars()" style="flex: 1; min-width: 150px; padding: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">✨ Auto-fill Cars</button>
-                <button class="auto-assign-btn" onclick="randomizeCars()" style="flex: 1; min-width: 150px; padding: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">🎲 Randomize Cars</button>
-            </div>
-            <div class="unassigned-passengers" id="unassignedList"></div>
         </div>
-
-        <div class="section">
-            <h2>Carpool Lineup ✅</h2>
-            <div class="cars-container" id="carsContainer"></div>
-        </div>
+        <!-- End Swipe Container -->
 
         <button class="save-btn" onclick="saveData()">✅ Auto Saved to Cloud</button>
     </div>
@@ -1487,6 +1589,58 @@
             projectId: firebaseConfig.projectId,
             authDomain: firebaseConfig.authDomain
         });
+
+        // ============================================
+        // TAB NAVIGATION & SWIPE SYSTEM
+        // ============================================
+
+        let currentTab = 0;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function switchTab(tabIndex) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(`tab-content-${tabIndex}`).classList.add('active');
+            document.getElementById(`tab-${tabIndex}`).classList.add('active');
+
+            currentTab = tabIndex;
+        }
+
+        // Add swipe detection
+        const swipeContainer = document.getElementById('swipeContainer');
+        swipeContainer.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        swipeContainer.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0 && currentTab < 3) {
+                    // Swipe left - next tab
+                    switchTab(currentTab + 1);
+                } else if (diff < 0 && currentTab > 0) {
+                    // Swipe right - previous tab
+                    switchTab(currentTab - 1);
+                }
+            }
+        }
 
         // ============================================
         // AUTHENTICATION SYSTEM
@@ -1880,7 +2034,8 @@
                 gasCost: document.getElementById('gasCost').value || '',
                 parkingFee: document.getElementById('parkingFee').value || '',
                 tollsFees: document.getElementById('tollsFees').value || '',
-                splitMethod: document.getElementById('splitMethod').value || 'passengers-only'
+                splitMethod: document.getElementById('splitMethod').value || 'passengers-only',
+                venmoUsername: sanitizeInput(document.getElementById('venmoUsername').value.trim())
             };
 
             // Use transactions to update specific fields atomically
@@ -2093,6 +2248,11 @@
                                 <div style="font-size: 13px; color: #666; margin-bottom: 4px;">💰 Cost per passenger:</div>
                                 <div style="font-size: 18px; font-weight: bold; color: #667eea;">$${car.perPassengerCost.toFixed(2)}</div>
                                 <div style="font-size: 12px; color: #999; margin-top: 4px;">Driver gets: <strong style="color: #4CAF50;">$${car.totalCarCost.toFixed(2)}</strong></div>
+                                ${generateVenmoLink(car.perPassengerCost, car.driver) ? `
+                                    <a href="${generateVenmoLink(car.perPassengerCost, car.driver)}" target="_blank" style="display: inline-block; margin-top: 8px; padding: 8px 16px; background: #008CFF; color: white; text-decoration: none; border-radius: 20px; font-size: 13px; font-weight: bold;">
+                                        💸 Pay via Venmo
+                                    </a>
+                                ` : ''}
                             </div>
                         ` : ''}
                     </div>
@@ -2498,6 +2658,19 @@
                         perPassengerCost = totalCosts / totalPassengers;
                         carCost = perPassengerCost * car.passengers.length;
                     }
+                } else if (splitMethod === 'per-car-gas') {
+                    // Each car's passengers split THAT car's gas ⚡ Perfect for EVs!
+                    const sharedCosts = parkingFee + tollsFees;
+                    const sharedPerPerson = sharedCosts / totalPeople;
+
+                    if (car.passengers.length > 0) {
+                        const gasPerPassengerInThisCar = gasCost / car.passengers.length;
+                        perPassengerCost = gasPerPassengerInThisCar + sharedPerPerson;
+                        carCost = perPassengerCost * car.passengers.length;
+                    } else {
+                        perPassengerCost = 0;
+                        carCost = 0;
+                    }
                 } else if (splitMethod === 'everyone') {
                     // Everyone splits equally
                     perPassengerCost = totalCosts / totalPeople;
@@ -2550,9 +2723,21 @@
 
         function getSplitMethodText(method) {
             if (method === 'passengers-only') return 'Passengers split all costs (Drivers pay nothing)';
+            if (method === 'per-car-gas') return 'Each car splits their own gas (⚡ EV-friendly!)';
             if (method === 'everyone') return 'Everyone splits equally';
             if (method === 'passengers-gas') return 'Passengers split gas, Everyone splits parking/tolls';
             return method;
+        }
+
+        function generateVenmoLink(amount, driverName) {
+            const venmoUsername = document.getElementById('venmoUsername').value.trim();
+            if (!venmoUsername) return null;
+
+            // Remove @ if user included it
+            const cleanUsername = venmoUsername.replace('@', '');
+            const note = encodeURIComponent(`Carpool with ${driverName}`);
+
+            return `https://venmo.com/${cleanUsername}?txn=pay&amount=${amount.toFixed(2)}&note=${note}`;
         }
 
         function copyGroupChatSummary() {
@@ -2819,6 +3004,7 @@
                         document.getElementById('parkingFee').value = data.eventDetails.parkingFee || '';
                         document.getElementById('tollsFees').value = data.eventDetails.tollsFees || '';
                         document.getElementById('splitMethod').value = data.eventDetails.splitMethod || 'passengers-only';
+                        document.getElementById('venmoUsername').value = data.eventDetails.venmoUsername || '';
                     }
 
                     cars = data.cars || [];
@@ -2920,6 +3106,7 @@
                     document.getElementById('parkingFee').value = data.eventDetails.parkingFee || '';
                     document.getElementById('tollsFees').value = data.eventDetails.tollsFees || '';
                     document.getElementById('splitMethod').value = data.eventDetails.splitMethod || 'passengers-only';
+                    document.getElementById('venmoUsername').value = data.eventDetails.venmoUsername || '';
                 }
 
                 cars = data.cars || [];
