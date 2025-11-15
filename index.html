@@ -989,12 +989,12 @@
 
             <div class="detail-group">
                 <label>📅 Event Date</label>
-                <input type="date" id="eventDate" class="detail-input">
+                <input type="text" id="eventDate" class="detail-input" placeholder="e.g., 11/16/2025" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'">
             </div>
 
             <div class="detail-group">
                 <label>🕐 Event Time</label>
-                <input type="time" id="eventTime" class="detail-input">
+                <input type="text" id="eventTime" class="detail-input" placeholder="e.g., 2:00 PM" onfocus="this.type='time'" onblur="if(!this.value)this.type='text'">
             </div>
 
             <div class="detail-group">
@@ -1003,7 +1003,7 @@
             </div>
 
             <div class="detail-group">
-                <label>🗺️ Address (Optional)</label>
+                <label>🗺️ Address</label>
                 <div class="address-group">
                     <input type="text" id="eventAddress" class="detail-input" placeholder="e.g., 123 Ocean Blvd, San Diego, CA">
                     <button type="button" class="maps-btn" onclick="openInMaps()">📍 Open in Maps</button>
@@ -1016,7 +1016,7 @@
             </div>
 
             <div class="detail-group">
-                <label>👥 Max Attendees (Optional)</label>
+                <label>👥 Max Attendees</label>
                 <input type="number" id="maxAttendees" class="detail-input" placeholder="e.g., 20" min="1">
             </div>
         </div>
