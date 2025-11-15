@@ -71,14 +71,15 @@ swipeContainer.addEventListener('touchend', e => {
 function handleSwipe() {
     const swipeThreshold = 50;
     const diff = touchStartX - touchEndX;
+    const totalTabs = 4;
 
     if (Math.abs(diff) > swipeThreshold) {
-        if (diff > 0 && currentTab < 3) {
-            // Swipe left - next tab
-            switchTab(currentTab + 1);
-        } else if (diff < 0 && currentTab > 0) {
-            // Swipe right - previous tab
-            switchTab(currentTab - 1);
+        if (diff > 0) {
+            // Swipe left - next tab (wrap around)
+            switchTab((currentTab + 1) % totalTabs);
+        } else if (diff < 0) {
+            // Swipe right - previous tab (wrap around)
+            switchTab((currentTab - 1 + totalTabs) % totalTabs);
         }
     }
 }
@@ -699,7 +700,7 @@ function renderCars() {
             vibePills += `<span class="vibe-pill">${car.energyLevel}</span>`;
         }
         if (car.singAlong) {
-            vibePills += `<span class="vibe-pill">🔊 Sing-along!</span>`;
+            vibePills += `<span class="vibe-pill">🎤 Karaoke!</span>`;
         }
 
         return `
@@ -1081,21 +1082,31 @@ END:VCALENDAR`;
 // ============================================
 
 function updateStatusUI() {
-    const statusPill = document.getElementById('eventStatusPill');
+    const statusPills = ['eventStatusPill', 'eventStatusPill2', 'eventStatusPill3', 'eventStatusPill4'];
     const finalizeBtn = document.getElementById('finalizeBtn');
 
-    if (eventStatus === 'finalized') {
-        statusPill.textContent = '✅ Finalized';
-        statusPill.className = 'status-pill status-finalized';
-        if (finalizeBtn) finalizeBtn.style.display = 'none';
-    } else {
-        statusPill.textContent = '📝 Draft';
-        statusPill.className = 'status-pill status-draft';
+    statusPills.forEach(pillId => {
+        const statusPill = document.getElementById(pillId);
+        if (statusPill) {
+            if (eventStatus === 'finalized') {
+                statusPill.textContent = '✅ Finalized';
+                statusPill.className = 'status-pill status-finalized';
+            } else {
+                statusPill.textContent = '📝 Draft';
+                statusPill.className = 'status-pill status-draft';
+            }
+        }
+    });
 
-        // Show finalize button only for event owner
-        const isEventOwner = currentShareId && eventOwnerId && currentUser && currentUser.uid === eventOwnerId;
-        if (finalizeBtn && isEventOwner && cars.length > 0) {
-            finalizeBtn.style.display = 'block';
+    if (finalizeBtn) {
+        if (eventStatus === 'finalized') {
+            finalizeBtn.style.display = 'none';
+        } else {
+            // Show finalize button only for event owner
+            const isEventOwner = currentShareId && eventOwnerId && currentUser && currentUser.uid === eventOwnerId;
+            if (isEventOwner && cars.length > 0) {
+                finalizeBtn.style.display = 'block';
+            }
         }
     }
 }
@@ -1485,7 +1496,7 @@ function copyGroupChatSummary() {
         let vibes = [];
         if (car.playlistVibe) vibes.push(`🎶 ${car.playlistVibe}`);
         if (car.energyLevel) vibes.push(car.energyLevel);
-        if (car.singAlong) vibes.push('🔊 Sing-along!');
+        if (car.singAlong) vibes.push('🎤 Karaoke!');
 
         if (vibes.length > 0) {
             summary += `   Vibe: ${vibes.join(' | ')}\n`;
