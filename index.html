@@ -1487,6 +1487,12 @@
         function autoSave() {
             if (isSaving) return; // Don't save if already saving
 
+            // Check if user is authenticated and dbRef is initialized
+            if (!currentUser || !dbRef) {
+                console.log('Cannot save: User not authenticated or dbRef not initialized');
+                return;
+            }
+
             isSaving = true;
 
             const eventName = document.getElementById('eventName').value.trim();
@@ -1509,11 +1515,11 @@
             // Use transactions to update specific fields atomically
             // This prevents overwriting teammates' concurrent edits
             const updates = {};
-            updates[`events/${eventId}/eventName`] = sanitizedEventName;
-            updates[`events/${eventId}/eventDetails`] = eventDetails;
-            updates[`events/${eventId}/cars`] = cars;
-            updates[`events/${eventId}/unassignedPassengers`] = unassignedPassengers;
-            updates[`events/${eventId}/lastUpdated`] = firebase.database.ServerValue.TIMESTAMP;
+            updates[`users/${currentUser.uid}/events/${eventId}/eventName`] = sanitizedEventName;
+            updates[`users/${currentUser.uid}/events/${eventId}/eventDetails`] = eventDetails;
+            updates[`users/${currentUser.uid}/events/${eventId}/cars`] = cars;
+            updates[`users/${currentUser.uid}/events/${eventId}/unassignedPassengers`] = unassignedPassengers;
+            updates[`users/${currentUser.uid}/events/${eventId}/lastUpdated`] = firebase.database.ServerValue.TIMESTAMP;
 
             // Use update() instead of set() to avoid overwriting entire object
             database.ref().update(updates).then(() => {
@@ -1523,7 +1529,7 @@
                 }, 500);
             }).catch(error => {
                 console.error('Error saving to Firebase:', error);
-                alert('Save Error: ' + error.message + '\n\nCheck that:\n1. Firebase Realtime Database is enabled\n2. Security rules are published\n3. You have internet connection');
+                alert('Save Error: ' + error.message + '\n\nCheck that:\n1. Firebase Realtime Database is enabled\n2. Security rules are published\n3. You have internet connection\n\nError details: ' + error.code);
                 isSaving = false;
             });
         }
