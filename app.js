@@ -1955,18 +1955,16 @@ function toggleDarkMode() {
     const isDarkMode = body.classList.contains('dark-mode');
     localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
 
-    // Update menu icon dynamically
-    const darkModeBtn = document.querySelector('.menu-item [onclick*="toggleDarkMode"]');
-    if (darkModeBtn) {
-        const iconSpan = darkModeBtn.querySelector('.menu-icon');
-        const textSpan = darkModeBtn.querySelector('.menu-text');
-        if (isDarkMode) {
-            iconSpan.textContent = '☀️';
-            textSpan.textContent = 'Toggle Light Mode';
-        } else {
-            iconSpan.textContent = '🌙';
-            textSpan.textContent = 'Toggle Dark Mode';
-        }
+    // Update menu icon and text using IDs
+    const iconSpan = document.getElementById('darkModeIcon');
+    const textSpan = document.getElementById('darkModeText');
+
+    if (isDarkMode) {
+        iconSpan.textContent = '☀️';
+        textSpan.textContent = 'Toggle Light Mode';
+    } else {
+        iconSpan.textContent = '🌙';
+        textSpan.textContent = 'Toggle Dark Mode';
     }
 }
 
@@ -1977,15 +1975,12 @@ function loadDarkModePreference() {
         document.body.classList.add('dark-mode');
 
         // Update menu text if it exists
-        setTimeout(() => {
-            const darkModeBtn = document.querySelector('.menu-item [onclick*="toggleDarkMode"]');
-            if (darkModeBtn) {
-                const iconSpan = darkModeBtn.querySelector('.menu-icon');
-                const textSpan = darkModeBtn.querySelector('.menu-text');
-                iconSpan.textContent = '☀️';
-                textSpan.textContent = 'Toggle Light Mode';
-            }
-        }, 100);
+        const iconSpan = document.getElementById('darkModeIcon');
+        const textSpan = document.getElementById('darkModeText');
+        if (iconSpan && textSpan) {
+            iconSpan.textContent = '☀️';
+            textSpan.textContent = 'Toggle Light Mode';
+        }
     }
 }
 
