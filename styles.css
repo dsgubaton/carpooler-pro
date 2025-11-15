@@ -1401,7 +1401,7 @@ body.dark-mode .dancing-cookie {
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    z-index: 10003;
+    z-index: 50000;
     min-width: 250px;
 }
 
@@ -1483,11 +1483,11 @@ body.dark-mode .dancing-cookie {
 /* Dark mode menu styling */
 body.dark-mode .cookie-menu {
     background: rgba(45, 45, 68, 0.95);
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10003;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 50000 !important;
 }
 
 body.dark-mode .menu-share {
