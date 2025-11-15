@@ -405,6 +405,7 @@ let cars = [];
 let unassignedPassengers = [];
 let selectedEmoji = '🚙';
 let isSaving = false;
+let eventStatus = 'draft'; // 'draft' or 'finalized'
 
 // Security: Rate limiting to prevent spam
 let lastActionTime = 0;
@@ -486,6 +487,7 @@ function autoSave() {
     updates[`users/${currentUser.uid}/events/${eventId}/eventDetails`] = eventDetails;
     updates[`users/${currentUser.uid}/events/${eventId}/cars`] = cars;
     updates[`users/${currentUser.uid}/events/${eventId}/unassignedPassengers`] = unassignedPassengers;
+    updates[`users/${currentUser.uid}/events/${eventId}/eventStatus`] = eventStatus;
     updates[`users/${currentUser.uid}/events/${eventId}/lastUpdated`] = firebase.database.ServerValue.TIMESTAMP;
 
     // Use update() instead of set() to avoid overwriting entire object
@@ -515,6 +517,12 @@ function openInMaps() {
 }
 
 function addCar() {
+    // Check if event is finalized
+    if (eventStatus === 'finalized') {
+        showToastNotification("🔒 Event is finalized! Cannot add new cars. Message the host if you need changes.");
+        return;
+    }
+
     // Security: Rate limiting
     if (isRateLimited()) return;
 
@@ -560,6 +568,7 @@ function addCar() {
     document.getElementById('singAlong').checked = false;
 
     renderCars();
+    updateStatusUI();
     autoSave();
 }
 
@@ -621,6 +630,12 @@ function removePassengerFromCar(carId, passengerId) {
 }
 
 function deleteCar(carId) {
+    // Check if event is finalized
+    if (eventStatus === 'finalized') {
+        showToastNotification("🔒 Event is finalized! Cannot delete cars. Message the host if you need changes.");
+        return;
+    }
+
     const car = cars.find(c => c.id === carId);
     if (car) {
         unassignedPassengers.push(...car.passengers);
@@ -1062,10 +1077,109 @@ END:VCALENDAR`;
 }
 
 // ============================================
+// EVENT LIFECYCLE (DRAFT / FINALIZED)
+// ============================================
+
+function updateStatusUI() {
+    const statusPill = document.getElementById('eventStatusPill');
+    const finalizeBtn = document.getElementById('finalizeBtn');
+
+    if (eventStatus === 'finalized') {
+        statusPill.textContent = '✅ Finalized';
+        statusPill.className = 'status-pill status-finalized';
+        if (finalizeBtn) finalizeBtn.style.display = 'none';
+    } else {
+        statusPill.textContent = '📝 Draft';
+        statusPill.className = 'status-pill status-draft';
+
+        // Show finalize button only for event owner
+        const isEventOwner = currentShareId && eventOwnerId && currentUser && currentUser.uid === eventOwnerId;
+        if (finalizeBtn && isEventOwner && cars.length > 0) {
+            finalizeBtn.style.display = 'block';
+        }
+    }
+}
+
+function showFinalizeConfirmation() {
+    if (cars.length === 0) {
+        alert('Please add at least one car before finalizing!');
+        return;
+    }
+
+    // Count unassigned passengers
+    const unassignedCount = unassignedPassengers.length;
+    let message = '🔒 Lock in these carpools and notify everyone?\n\n';
+
+    if (unassignedCount > 0) {
+        message += `⚠️ Note: ${unassignedCount} friend${unassignedCount > 1 ? 's are' : ' is'} still unassigned!\n\n`;
+    }
+
+    message += 'After finalizing:\n';
+    message += '• Carpools are locked\n';
+    message += '• Only minor edits allowed\n';
+    message += '• People can still join but changes are limited\n\n';
+    message += 'Continue?';
+
+    if (confirm(message)) {
+        finalizeEvent();
+    }
+}
+
+function finalizeEvent() {
+    eventStatus = 'finalized';
+    updateStatusUI();
+    autoSave();
+
+    alert('✅ Carpools finalized! Everyone is locked in. If someone needs to swap, they should message you.');
+}
+
+function showToastNotification(message) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        z-index: 10000;
+        font-weight: bold;
+        animation: slideDown 0.3s ease;
+    `;
+
+    document.body.appendChild(toast);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.animation = 'slideUp 0.3s ease';
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 3000);
+}
+
+function checkIfFinalized() {
+    if (eventStatus === 'finalized') {
+        showToastNotification("🔒 This event is finalized! Changes are limited. Message the host if you need to swap.");
+        return true;
+    }
+    return false;
+}
+
+// ============================================
 // AUTO-ASSIGN FEATURES
 // ============================================
 
 function autoFillCars() {
+    // Check if event is finalized
+    if (eventStatus === 'finalized') {
+        showToastNotification("🔒 Event is finalized! Cannot auto-assign. Make manual changes if needed.");
+        return;
+    }
+
     if (unassignedPassengers.length === 0) {
         alert('No unassigned friends to auto-fill! 🤷');
         return;
@@ -1138,6 +1252,12 @@ function autoFillCars() {
 }
 
 function randomizeCars() {
+    // Check if event is finalized
+    if (eventStatus === 'finalized') {
+        showToastNotification("🔒 Event is finalized! Cannot randomize. Make manual changes if needed.");
+        return;
+    }
+
     if (cars.length === 0) {
         alert('Please add at least one car first! 🚗');
         return;
@@ -1704,6 +1824,7 @@ function loadData() {
 
         cars = data.cars || [];
         unassignedPassengers = data.unassignedPassengers || [];
+        eventStatus = data.eventStatus || 'draft';
 
         // Ensure all cars have passengers arrays
         cars.forEach(car => {
@@ -1714,6 +1835,7 @@ function loadData() {
 
         renderCars();
         renderUnassigned();
+        updateStatusUI();
         calculateCosts(); // Recalculate costs after loading data
     });
 }
