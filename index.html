@@ -1345,6 +1345,45 @@
             </div>
         </div>
 
+        <!-- Trip Costs Section -->
+        <div class="section" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border: 2px solid #667eea;">
+            <h2>💰 Trip Costs</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 15px;">Split gas, parking, tolls fairly among passengers</p>
+
+            <div class="detail-group">
+                <label>⛽ Gas Cost (per car)</label>
+                <input type="number" id="gasCost" class="detail-input" placeholder="e.g., 40" min="0" step="0.01" onchange="calculateCosts()">
+            </div>
+
+            <div class="detail-group">
+                <label>🅿️ Parking Fee (total)</label>
+                <input type="number" id="parkingFee" class="detail-input" placeholder="e.g., 20" min="0" step="0.01" onchange="calculateCosts()">
+            </div>
+
+            <div class="detail-group">
+                <label>🎫 Tolls / Entry Fees (total)</label>
+                <input type="number" id="tollsFees" class="detail-input" placeholder="e.g., 15" min="0" step="0.01" onchange="calculateCosts()">
+            </div>
+
+            <div class="detail-group">
+                <label>🤝 Split Method</label>
+                <select id="splitMethod" class="detail-input" onchange="calculateCosts()" style="cursor: pointer;">
+                    <option value="passengers-only">Passengers split all costs (Drivers pay nothing)</option>
+                    <option value="everyone">Everyone splits equally (including drivers)</option>
+                    <option value="passengers-gas">Passengers split gas, Everyone splits parking/tolls</option>
+                </select>
+            </div>
+
+            <div id="costSummary" style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px; display: none;">
+                <h3 style="margin: 0 0 10px 0; color: #667eea;">💵 Cost Breakdown</h3>
+                <div id="costBreakdownText"></div>
+            </div>
+
+            <button onclick="copyGroupChatSummary()" style="width: 100%; margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">
+                📋 Copy for Group Chat
+            </button>
+        </div>
+
         <div class="section">
             <h2>Add Car 🚗</h2>
             <div class="input-group">
@@ -1837,7 +1876,11 @@
                 location: sanitizeInput(document.getElementById('eventLocation').value.trim()),
                 address: sanitizeInput(document.getElementById('eventAddress').value.trim()),
                 notes: sanitizeInput(document.getElementById('eventNotes').value.trim()),
-                maxAttendees: document.getElementById('maxAttendees').value || ''
+                maxAttendees: document.getElementById('maxAttendees').value || '',
+                gasCost: document.getElementById('gasCost').value || '',
+                parkingFee: document.getElementById('parkingFee').value || '',
+                tollsFees: document.getElementById('tollsFees').value || '',
+                splitMethod: document.getElementById('splitMethod').value || 'passengers-only'
             };
 
             // Use transactions to update specific fields atomically
@@ -2045,6 +2088,13 @@
                                 `;
                             }).join('')}
                         </div>
+                        ${car.perPassengerCost && car.perPassengerCost > 0 && car.passengers.length > 0 ? `
+                            <div style="margin-top: 12px; padding: 10px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 6px; border-left: 3px solid #667eea;">
+                                <div style="font-size: 13px; color: #666; margin-bottom: 4px;">💰 Cost per passenger:</div>
+                                <div style="font-size: 18px; font-weight: bold; color: #667eea;">$${car.perPassengerCost.toFixed(2)}</div>
+                                <div style="font-size: 12px; color: #999; margin-top: 4px;">Driver gets: <strong style="color: #4CAF50;">$${car.totalCarCost.toFixed(2)}</strong></div>
+                            </div>
+                        ` : ''}
                     </div>
                 `;
             }).join('');
@@ -2403,6 +2453,184 @@
             alert('🎲 Passengers randomized! Drivers stayed in their cars. ✨');
         }
 
+        // ============================================
+        // COST SPLITTING FEATURES
+        // ============================================
+
+        function calculateCosts() {
+            const gasCost = parseFloat(document.getElementById('gasCost').value) || 0;
+            const parkingFee = parseFloat(document.getElementById('parkingFee').value) || 0;
+            const tollsFees = parseFloat(document.getElementById('tollsFees').value) || 0;
+            const splitMethod = document.getElementById('splitMethod').value;
+
+            // No costs entered
+            if (gasCost === 0 && parkingFee === 0 && tollsFees === 0) {
+                document.getElementById('costSummary').style.display = 'none';
+                renderCars();
+                return;
+            }
+
+            // Count total people
+            let totalPassengers = 0;
+            let totalPeople = cars.length; // Start with drivers
+
+            cars.forEach(car => {
+                totalPassengers += car.passengers.length;
+                totalPeople += car.passengers.length;
+            });
+
+            if (totalPeople === 0) {
+                document.getElementById('costSummary').style.display = 'none';
+                return;
+            }
+
+            const totalCosts = (gasCost * cars.length) + parkingFee + tollsFees;
+            let breakdownHTML = '';
+
+            // Calculate per-car costs
+            cars.forEach((car, index) => {
+                let carCost = 0;
+                let perPassengerCost = 0;
+
+                if (splitMethod === 'passengers-only') {
+                    // Passengers split everything
+                    if (totalPassengers > 0) {
+                        perPassengerCost = totalCosts / totalPassengers;
+                        carCost = perPassengerCost * car.passengers.length;
+                    }
+                } else if (splitMethod === 'everyone') {
+                    // Everyone splits equally
+                    perPassengerCost = totalCosts / totalPeople;
+                    carCost = perPassengerCost * (car.passengers.length + 1); // +1 for driver
+                } else if (splitMethod === 'passengers-gas') {
+                    // Passengers split gas, everyone splits parking/tolls
+                    const sharedCosts = parkingFee + tollsFees;
+                    const sharedPerPerson = sharedCosts / totalPeople;
+
+                    if (totalPassengers > 0) {
+                        const gasPerPassenger = (gasCost * cars.length) / totalPassengers;
+                        perPassengerCost = gasPerPassenger + sharedPerPerson;
+                        const driverShareOfShared = sharedPerPerson;
+                        carCost = (perPassengerCost * car.passengers.length);
+                    } else {
+                        perPassengerCost = sharedPerPerson;
+                        carCost = sharedPerPerson * (car.passengers.length + 1);
+                    }
+                }
+
+                // Store costs on car object for rendering
+                car.perPassengerCost = perPassengerCost;
+                car.totalCarCost = carCost;
+            });
+
+            // Generate breakdown text
+            breakdownHTML += `<div style="color: #666; line-height: 1.8;">`;
+            breakdownHTML += `<strong>Total Trip Cost:</strong> $${totalCosts.toFixed(2)}<br>`;
+            breakdownHTML += `<strong>Split Method:</strong> ${getSplitMethodText(splitMethod)}<br><br>`;
+
+            cars.forEach((car, index) => {
+                if (car.passengers.length > 0) {
+                    breakdownHTML += `<div style="margin-bottom: 10px; padding: 10px; background: #f5f5f5; border-radius: 6px;">`;
+                    breakdownHTML += `<strong>${car.emoji} ${car.driver}'s car:</strong><br>`;
+                    breakdownHTML += `Each passenger pays: <strong style="color: #667eea;">$${car.perPassengerCost.toFixed(2)}</strong><br>`;
+                    breakdownHTML += `Driver receives: <strong style="color: #4CAF50;">$${car.totalCarCost.toFixed(2)}</strong>`;
+                    breakdownHTML += `</div>`;
+                }
+            });
+
+            breakdownHTML += `</div>`;
+
+            document.getElementById('costBreakdownText').innerHTML = breakdownHTML;
+            document.getElementById('costSummary').style.display = 'block';
+
+            // Re-render cars to show costs
+            renderCars();
+            autoSave();
+        }
+
+        function getSplitMethodText(method) {
+            if (method === 'passengers-only') return 'Passengers split all costs (Drivers pay nothing)';
+            if (method === 'everyone') return 'Everyone splits equally';
+            if (method === 'passengers-gas') return 'Passengers split gas, Everyone splits parking/tolls';
+            return method;
+        }
+
+        function copyGroupChatSummary() {
+            const eventName = document.getElementById('eventName').value.trim() || 'Carpool';
+
+            if (cars.length === 0) {
+                alert('Add some cars first! 🚗');
+                return;
+            }
+
+            let summary = `🚗 ${eventName} - Carpool Assignments\n\n`;
+
+            // Event details if available
+            const eventDate = document.getElementById('eventDate').value;
+            const eventTime = document.getElementById('eventTime').value;
+            const eventLocation = document.getElementById('eventLocation').value;
+
+            if (eventDate && eventTime) {
+                const dateObj = new Date(eventDate + 'T' + eventTime);
+                const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const timeStr = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                summary += `📅 ${dateStr} at ${timeStr}\n`;
+            }
+
+            if (eventLocation) {
+                summary += `📍 ${eventLocation}\n`;
+            }
+
+            if (eventDate || eventLocation) {
+                summary += `\n`;
+            }
+
+            // Car assignments
+            cars.forEach((car, index) => {
+                summary += `${car.emoji} ${car.driver}'s car (${car.passengers.length}/${car.seats} seats):\n`;
+
+                if (car.passengers.length > 0) {
+                    const passengerNames = car.passengers.map(p => p.name).join(', ');
+                    summary += `   Passengers: ${passengerNames}\n`;
+
+                    // Add cost info if costs are set
+                    if (car.perPassengerCost && car.perPassengerCost > 0) {
+                        summary += `   💰 Each passenger: $${car.perPassengerCost.toFixed(2)}\n`;
+                    }
+                } else {
+                    summary += `   (Empty - need passengers!)\n`;
+                }
+
+                summary += `\n`;
+            });
+
+            // Unassigned passengers
+            if (unassignedPassengers.length > 0) {
+                summary += `⚠️ Unassigned: ${unassignedPassengers.map(p => p.name).join(', ')}\n\n`;
+            }
+
+            // Cost summary
+            const gasCost = parseFloat(document.getElementById('gasCost').value) || 0;
+            const parkingFee = parseFloat(document.getElementById('parkingFee').value) || 0;
+            const tollsFees = parseFloat(document.getElementById('tollsFees').value) || 0;
+
+            if (gasCost > 0 || parkingFee > 0 || tollsFees > 0) {
+                summary += `💵 Total Trip Cost: $${((gasCost * cars.length) + parkingFee + tollsFees).toFixed(2)}\n`;
+                summary += `   ⛽ Gas: $${gasCost}/car | 🅿️ Parking: $${parkingFee} | 🎫 Tolls: $${tollsFees}\n`;
+            }
+
+            // Copy to clipboard
+            try {
+                navigator.clipboard.writeText(summary).then(() => {
+                    alert('📋 Copied to clipboard! Paste into your group chat.');
+                }).catch(err => {
+                    prompt('Copy this text:', summary);
+                });
+            } catch (error) {
+                prompt('Copy this text:', summary);
+            }
+        }
+
         // Generate random share ID
         function generateShareId() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -2587,6 +2815,10 @@
                         document.getElementById('eventAddress').value = data.eventDetails.address || '';
                         document.getElementById('eventNotes').value = data.eventDetails.notes || '';
                         document.getElementById('maxAttendees').value = data.eventDetails.maxAttendees || '';
+                        document.getElementById('gasCost').value = data.eventDetails.gasCost || '';
+                        document.getElementById('parkingFee').value = data.eventDetails.parkingFee || '';
+                        document.getElementById('tollsFees').value = data.eventDetails.tollsFees || '';
+                        document.getElementById('splitMethod').value = data.eventDetails.splitMethod || 'passengers-only';
                     }
 
                     cars = data.cars || [];
@@ -2602,6 +2834,7 @@
 
                     renderCars();
                     renderUnassigned();
+                    calculateCosts(); // Calculate costs after loading shared data
 
                     // Show onboarding modal if user is new to this event
                     if (currentUser) {
@@ -2683,6 +2916,10 @@
                     document.getElementById('eventAddress').value = data.eventDetails.address || '';
                     document.getElementById('eventNotes').value = data.eventDetails.notes || '';
                     document.getElementById('maxAttendees').value = data.eventDetails.maxAttendees || '';
+                    document.getElementById('gasCost').value = data.eventDetails.gasCost || '';
+                    document.getElementById('parkingFee').value = data.eventDetails.parkingFee || '';
+                    document.getElementById('tollsFees').value = data.eventDetails.tollsFees || '';
+                    document.getElementById('splitMethod').value = data.eventDetails.splitMethod || 'passengers-only';
                 }
 
                 cars = data.cars || [];
@@ -2697,6 +2934,7 @@
 
                 renderCars();
                 renderUnassigned();
+                calculateCosts(); // Recalculate costs after loading data
             });
         }
 
