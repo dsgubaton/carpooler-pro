@@ -1390,155 +1390,109 @@ body.dark-mode .dancing-cookie {
     transform: none;
 }
 
-/* Cookie Menu - Centered Modal Style */
+/* Cookie Menu - Simple Centered Style */
 .cookie-menu {
     display: none;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 20px;
-    padding: 0;
-    box-shadow: 0 15px 50px rgba(0,0,0,0.4);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     z-index: 10003;
-    min-width: 320px;
-    animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-@keyframes popIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
+    min-width: 250px;
 }
 
 .cookie-menu.show {
     display: block;
 }
 
-.cookie-menu-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px;
-    border-radius: 20px 20px 0 0;
-    font-weight: bold;
-    font-size: 18px;
-    text-align: center;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.menu-item {
+.cookie-menu-btn {
     width: 100%;
-    padding: 18px 24px;
+    padding: 12px;
+    margin: 5px 0;
     border: none;
-    background: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 15px;
+    border-radius: 10px;
     font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    text-align: left;
-    position: relative;
-}
-
-.menu-item::after {
-    content: '→';
-    position: absolute;
-    right: 24px;
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: all 0.3s ease;
-    color: #667eea;
     font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: white;
+    color: #333;
 }
 
-.menu-item:hover {
-    background: linear-gradient(90deg, #f8f9ff 0%, #ffffff 100%);
-    padding-left: 30px;
+.cookie-menu-btn:hover {
+    transform: scale(1.05);
 }
 
-.menu-item:hover::after {
-    opacity: 1;
-    transform: translateX(0);
+.cookie-menu-btn:active {
+    transform: scale(0.95);
 }
 
-.menu-item:active {
-    background: #f0f0f0;
+.menu-share {
+    background: #667eea;
+    color: white;
 }
 
-.menu-icon {
-    font-size: 24px;
-    width: 32px;
-    text-align: center;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-}
-
-.menu-text {
-    flex: 1;
+.menu-share:hover {
+    background: #764ba2;
 }
 
 .menu-logout {
-    color: #ff6b6b;
-    border-top: 2px solid #f0f0f0;
+    background: #ff6b6b;
+    color: white;
 }
 
 .menu-logout:hover {
-    background: linear-gradient(90deg, #fff5f5 0%, #ffffff 100%);
-}
-
-.menu-logout::after {
-    color: #ff6b6b;
+    background: #ee5a52;
 }
 
 .menu-close {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 0 0 20px 20px;
-    background: #f5f5f5;
+    background: #e0e0e0;
     color: #666;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.2s;
-    border-top: 1px solid #e0e0e0;
 }
 
 .menu-close:hover {
-    background: #e0e0e0;
+    background: #ccc;
 }
 
 /* Dark mode menu styling */
 body.dark-mode .cookie-menu {
-    background: #2d2d44;
-    box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+    background: rgba(45, 45, 68, 0.95);
 }
 
-body.dark-mode .cookie-menu-header {
-    background: linear-gradient(135deg, #4a5588 0%, #5a4a88 100%);
-}
-
-body.dark-mode .menu-item {
-    background: #2d2d44;
+body.dark-mode .cookie-menu-btn {
+    background: #3d3d5c;
     color: #e0e0e0;
 }
 
-body.dark-mode .menu-item:hover {
-    background: linear-gradient(90deg, #3d3d5c 0%, #2d2d44 100%);
+body.dark-mode .cookie-menu-btn:hover {
+    background: #4d4d6c;
+}
+
+body.dark-mode .menu-share {
+    background: #4a5588;
+    color: white;
+}
+
+body.dark-mode .menu-share:hover {
+    background: #5a6598;
+}
+
+body.dark-mode .menu-logout {
+    background: #884a5a;
+    color: white;
+}
+
+body.dark-mode .menu-logout:hover {
+    background: #985a6a;
 }
 
 body.dark-mode .menu-close {
     background: #1a1a2e;
     color: #999;
-    border-top-color: rgba(255, 255, 255, 0.1);
 }
 
 body.dark-mode .menu-close:hover {

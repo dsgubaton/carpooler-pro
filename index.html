@@ -79,30 +79,24 @@
         </div>
     </div>
 
-    <!-- Cookie Menu (Floating Action Button Menu) -->
+    <!-- Cookie Menu -->
     <div class="cookie-menu" id="cookieMenu">
-        <div class="cookie-menu-header">Quick Actions</div>
-        <button class="menu-item" onclick="shareEvent(); closeCookieMenu();">
-            <span class="menu-icon">🔗</span>
-            <span class="menu-text">Share with Friends</span>
+        <button class="cookie-menu-btn menu-share" onclick="shareEvent(); closeCookieMenu();">
+            🔗 Share with Friends
         </button>
-        <button class="menu-item" onclick="randomizeCars(); closeCookieMenu();">
-            <span class="menu-icon">🎲</span>
-            <span class="menu-text">Randomize Cars</span>
+        <button class="cookie-menu-btn" onclick="randomizeCars(); closeCookieMenu();">
+            🎲 Randomize Cars
         </button>
-        <button class="menu-item" onclick="switchTab(3); closeCookieMenu();">
-            <span class="menu-icon">💰</span>
-            <span class="menu-text">Trip Costs</span>
+        <button class="cookie-menu-btn" onclick="switchTab(3); closeCookieMenu();">
+            💰 Trip Costs
         </button>
-        <button class="menu-item" id="darkModeToggle" onclick="toggleDarkMode(); closeCookieMenu();">
-            <span class="menu-icon" id="darkModeIcon">🌙</span>
-            <span class="menu-text" id="darkModeText">Toggle Dark Mode</span>
+        <button class="cookie-menu-btn" id="darkModeToggle" onclick="toggleDarkMode(); closeCookieMenu();">
+            <span id="darkModeIcon">🌙</span> <span id="darkModeText">Toggle Dark Mode</span>
         </button>
-        <button class="menu-item menu-logout" onclick="handleLogout()">
-            <span class="menu-icon">🚪</span>
-            <span class="menu-text">Log Out</span>
+        <button class="cookie-menu-btn menu-logout" onclick="handleLogout()">
+            🚪 Log Out
         </button>
-        <button class="menu-close" onclick="closeCookieMenu()">✖ Close</button>
+        <button class="cookie-menu-btn menu-close" onclick="closeCookieMenu()">✖ Close</button>
     </div>
 
     <!-- Onboarding Modal for Shared Links -->
