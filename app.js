@@ -22,6 +22,263 @@ console.log('Firebase initialized:', {
 });
 
 // ============================================
+// EVENT TYPE / MODE CONFIGURATIONS
+// ============================================
+
+const MODE_CONFIGS = {
+    carpool: {
+        icon: '🚗',
+        groupName: 'Car',
+        groupNamePlural: 'Cars',
+        leaderName: 'Driver',
+        capacityName: 'seats',
+        emojis: ['🚗', '🚙', '🚕', '🚐', '🛻', '🚓'],
+        defaultEmoji: '🚙',
+        subtitle: "Who's riding with who?! 🤪",
+        addGroupLabel: 'Add Car 🚗',
+        addFriendLabel: 'Add Friend 👫',
+        lineupLabel: 'Carpool Lineup ✅',
+        finalizeLabel: '✅ Finalize Carpools'
+    },
+    teams: {
+        icon: '🎳',
+        groupName: 'Team',
+        groupNamePlural: 'Teams',
+        leaderName: 'Captain',
+        capacityName: 'spots',
+        emojis: ['⚽', '🏀', '🏈', '⚾', '🎾', '🏐', '🏓', '🎱'],
+        defaultEmoji: '⚽',
+        subtitle: "Let's form some teams! 💪",
+        addGroupLabel: 'Add Team 🎯',
+        addFriendLabel: 'Add Player 👥',
+        lineupLabel: 'Team Roster ✅',
+        finalizeLabel: '✅ Finalize Teams'
+    },
+    tables: {
+        icon: '🍽️',
+        groupName: 'Table',
+        groupNamePlural: 'Tables',
+        leaderName: 'Host',
+        capacityName: 'seats',
+        emojis: ['🍽️', '🪑', '🍷', '🍴', '🎂', '🥂'],
+        defaultEmoji: '🍽️',
+        subtitle: "Who's sitting where? 🎉",
+        addGroupLabel: 'Add Table 🍽️',
+        addFriendLabel: 'Add Guest 👫',
+        lineupLabel: 'Seating Chart ✅',
+        finalizeLabel: '✅ Finalize Seating'
+    },
+    lanes: {
+        icon: '🎳',
+        groupName: 'Lane',
+        groupNamePlural: 'Lanes',
+        leaderName: 'Leader',
+        capacityName: 'spots',
+        emojis: ['🎳', '⛳', '🏌️', '🎯', '🎪'],
+        defaultEmoji: '🎳',
+        subtitle: "Let's assign lanes! 🎳",
+        addGroupLabel: 'Add Lane 🎳',
+        addFriendLabel: 'Add Player 👥',
+        lineupLabel: 'Lane Assignments ✅',
+        finalizeLabel: '✅ Finalize Lanes'
+    },
+    rooms: {
+        icon: '🚪',
+        groupName: 'Room',
+        groupNamePlural: 'Rooms',
+        leaderName: 'Coordinator',
+        capacityName: 'spots',
+        emojis: ['🚪', '🏠', '🏨', '🛏️', '🔑', '🏡'],
+        defaultEmoji: '🚪',
+        subtitle: "Who's rooming together? 🏨",
+        addGroupLabel: 'Add Room 🚪',
+        addFriendLabel: 'Add Person 👫',
+        lineupLabel: 'Room Assignments ✅',
+        finalizeLabel: '✅ Finalize Rooms'
+    },
+    bus: {
+        icon: '🚌',
+        groupName: 'Bus',
+        groupNamePlural: 'Buses',
+        leaderName: 'Driver',
+        capacityName: 'seats',
+        emojis: ['🚌', '🚐', '🚎', '🚍'],
+        defaultEmoji: '🚌',
+        subtitle: "All aboard! 🚌",
+        addGroupLabel: 'Add Bus 🚌',
+        addFriendLabel: 'Add Passenger 👫',
+        lineupLabel: 'Bus Seating ✅',
+        finalizeLabel: '✅ Finalize Buses'
+    },
+    meetup: {
+        icon: '🚶',
+        groupName: 'Group',
+        groupNamePlural: 'Groups',
+        leaderName: 'Leader',
+        capacityName: 'spots',
+        emojis: ['🚶', '👥', '🚶‍♀️', '🚶‍♂️', '👫', '👬', '👭'],
+        defaultEmoji: '👥',
+        subtitle: "Let's organize groups! 🎉",
+        addGroupLabel: 'Add Group 👥',
+        addFriendLabel: 'Add Person 👫',
+        lineupLabel: 'Group Assignments ✅',
+        finalizeLabel: '✅ Finalize Groups'
+    }
+};
+
+let currentMode = 'carpool';
+
+function handleEventTypeChange() {
+    const eventType = document.getElementById('eventType').value;
+    currentMode = eventType;
+    updateUIForMode(eventType);
+    autoSave();
+}
+
+function updateUIForMode(mode) {
+    const config = MODE_CONFIGS[mode];
+
+    // Update main title based on mode
+    const mainTitle = document.querySelector('h1');
+    if (mainTitle) {
+        const titleMap = {
+            carpool: '🚗 Carpool Splitter 🚙',
+            teams: '⚽ Team Organizer 🏀',
+            tables: '🍽️ Seating Planner 🪑',
+            lanes: '🎳 Lane Assignments 🎯',
+            rooms: '🚪 Room Planner 🏨',
+            bus: '🚌 Bus Seating 🚐',
+            meetup: '🚶 Group Organizer 👥'
+        };
+        mainTitle.textContent = titleMap[mode] || '🚗 Carpool Splitter 🚙';
+    }
+
+    // Update subtitle
+    document.querySelector('.subtitle').textContent = config.subtitle;
+
+    // Update Add Group section
+    const addGroupSection = document.querySelector('.section h2');
+    if (addGroupSection && addGroupSection.textContent.includes('Add')) {
+        addGroupSection.textContent = config.addGroupLabel;
+    }
+
+    // Update placeholders
+    const driverInput = document.getElementById('driverName');
+    if (driverInput) {
+        driverInput.placeholder = `${config.leaderName}'s name`;
+    }
+
+    const seatInput = document.getElementById('seatCount');
+    if (seatInput) {
+        seatInput.placeholder = `# of ${config.capacityName}`;
+    }
+
+    // Update car nickname label
+    const nicknameLabel = document.querySelector('label[for="carNickname"]');
+    if (nicknameLabel) {
+        nicknameLabel.textContent = `🎯 ${config.groupName} Nickname`;
+    }
+
+    // Update Add Friend section
+    const addFriendHeader = document.querySelectorAll('.section h2')[1];
+    if (addFriendHeader) {
+        addFriendHeader.textContent = config.addFriendLabel;
+    }
+
+    // Update Carpool Lineup header
+    const lineupHeader = document.querySelectorAll('.section h2')[2];
+    if (lineupHeader) {
+        lineupHeader.textContent = config.lineupLabel;
+    }
+
+    // Update finalize button
+    const finalizeBtn = document.getElementById('finalizeBtn');
+    if (finalizeBtn) {
+        finalizeBtn.textContent = config.finalizeLabel;
+    }
+
+    // Update button text
+    const addCarBtn = document.querySelector('button[onclick="addCar()"]');
+    if (addCarBtn) {
+        addCarBtn.textContent = `Add ${config.groupName}`;
+    }
+
+    // Update emoji picker
+    updateEmojiPicker(config.emojis);
+
+    // Select the default emoji visually
+    setTimeout(() => {
+        selectMainEmoji(config.defaultEmoji);
+    }, 50);
+
+    // Re-render to update any existing content
+    renderCars();
+    renderUnassigned();
+}
+
+function updateEmojiPicker(emojis) {
+    // Update main emoji picker
+    const mainPicker = document.getElementById('mainEmojiPicker');
+    if (mainPicker) {
+        mainPicker.innerHTML = emojis.map(emoji =>
+            `<span class="emoji-option" onclick="selectMainEmoji('${emoji}')">${emoji}</span>`
+        ).join('');
+    }
+
+    // Update onboarding emoji picker
+    const onboardingPicker = document.querySelector('#onboardingStep2Driver .emoji-picker-mini');
+    if (onboardingPicker) {
+        onboardingPicker.innerHTML = emojis.map(emoji =>
+            `<span class="emoji-option" onclick="selectOnboardingEmoji('${emoji}')">${emoji}</span>`
+        ).join('');
+    }
+
+    // Set default emoji for current mode
+    const config = MODE_CONFIGS[currentMode];
+    selectedEmoji = config.defaultEmoji;
+}
+
+function selectMainEmoji(emoji) {
+    selectedEmoji = emoji;
+    // Update visual selection
+    const picker = document.getElementById('mainEmojiPicker');
+    if (picker) {
+        picker.querySelectorAll('.emoji-option').forEach(el => {
+            el.classList.remove('selected');
+            if (el.textContent === emoji) {
+                el.classList.add('selected');
+            }
+        });
+    }
+}
+
+// ============================================
+// TOAST NOTIFICATION SYSTEM
+// ============================================
+
+function showToast(message, type = 'info', duration = 3000) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+
+    // Remove toast after duration
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            container.removeChild(toast);
+        }, 300);
+    }, duration);
+}
+
+// ============================================
 // TAB NAVIGATION & SWIPE SYSTEM
 // ============================================
 
@@ -270,7 +527,7 @@ async function handleResetPassword(event) {
 
     try {
         await auth.sendPasswordResetEmail(email);
-        alert('Password reset email sent! Check your inbox.');
+        showToast('Password reset email sent! Check your inbox. 📧', 'success');
         switchAuthTab('login');
         document.getElementById('resetEmail').value = '';
     } catch (error) {
@@ -360,7 +617,7 @@ async function handleLogout() {
             // onAuthStateChanged will handle showing the auth modal
         } catch (error) {
             console.error('Logout error:', error);
-            alert('Logout failed. Please try again.');
+            showToast('Logout failed. Please try again.', 'error');
         }
     }
 }
@@ -415,7 +672,7 @@ const ACTION_COOLDOWN = 500; // 500ms between actions
 function isRateLimited() {
     const now = Date.now();
     if (now - lastActionTime < ACTION_COOLDOWN) {
-        alert('Slow down! You\'re going too fast 🐌');
+        showToast('Slow down! You\'re going too fast 🐌', 'warning');
         return true;
     }
     lastActionTime = now;
@@ -432,16 +689,16 @@ function sanitizeInput(str) {
 // Security: Validate input length and content
 function validateInput(input, maxLength, fieldName) {
     if (!input || input.trim().length === 0) {
-        alert(`Please enter a ${fieldName}!`);
+        showToast(`Please enter a ${fieldName}!`, 'warning');
         return false;
     }
     if (input.length > maxLength) {
-        alert(`${fieldName} must be ${maxLength} characters or less!`);
+        showToast(`${fieldName} must be ${maxLength} characters or less!`, 'warning');
         return false;
     }
     // Block obviously malicious patterns
     if (/<script|javascript:|onerror|onclick/i.test(input)) {
-        alert('Invalid characters detected!');
+        showToast('Invalid characters detected!', 'error');
         return false;
     }
     return true;
@@ -485,6 +742,7 @@ function autoSave() {
     // This prevents overwriting teammates' concurrent edits
     const updates = {};
     updates[`users/${currentUser.uid}/events/${eventId}/eventName`] = sanitizedEventName;
+    updates[`users/${currentUser.uid}/events/${eventId}/eventType`] = currentMode;
     updates[`users/${currentUser.uid}/events/${eventId}/eventDetails`] = eventDetails;
     updates[`users/${currentUser.uid}/events/${eventId}/cars`] = cars;
     updates[`users/${currentUser.uid}/events/${eventId}/unassignedPassengers`] = unassignedPassengers;
@@ -499,7 +757,7 @@ function autoSave() {
         }, 500);
     }).catch(error => {
         console.error('Error saving to Firebase:', error);
-        alert('Save Error: ' + error.message + '\n\nCheck that:\n1. Firebase Realtime Database is enabled\n2. Security rules are published\n3. You have internet connection\n\nError details: ' + error.code);
+        showToast('Save Error: ' + error.message + '. Check console for details.', 'error', 5000);
         isSaving = false;
     });
 }
@@ -508,7 +766,7 @@ function autoSave() {
 function openInMaps() {
     const address = document.getElementById('eventAddress').value.trim();
     if (!address) {
-        alert('Please enter an address first!');
+        showToast('Please enter an address first! 📍', 'warning');
         return;
     }
 
@@ -541,7 +799,8 @@ function addCar() {
 
     // Validate seat count
     if (!seatCount || seatCount < 1 || seatCount > 20) {
-        alert('Please enter a valid seat count (1-20)!');
+        const config = MODE_CONFIGS[currentMode];
+        showToast(`Please enter a valid ${config.capacityName} count (1-20)! ${config.icon}`, 'warning');
         return;
     }
 
@@ -604,7 +863,8 @@ function assignPassenger(passengerId, carId) {
     if (!passenger || !car) return;
 
     if (car.passengers.length >= car.seats) {
-        alert('This car is full!');
+        const config = MODE_CONFIGS[currentMode];
+        showToast(`This ${config.groupName.toLowerCase()} is full! ${config.icon}`, 'warning');
         return;
     }
 
@@ -651,17 +911,19 @@ function editSeats(carId) {
     const car = cars.find(c => c.id === carId);
     if (!car) return;
 
-    const newSeats = prompt(`Change number of seats for ${car.driver}'s car:`, car.seats);
+    const config = MODE_CONFIGS[currentMode];
+
+    const newSeats = prompt(`Change number of ${config.capacityName} for ${car.driver}'s ${config.groupName.toLowerCase()}:`, car.seats);
     if (newSeats === null) return; // User cancelled
 
     const seatCount = parseInt(newSeats);
     if (isNaN(seatCount) || seatCount < 1) {
-        alert('Please enter a valid number of seats!');
+        showToast(`Please enter a valid number of ${config.capacityName}!`, 'warning');
         return;
     }
 
     if (seatCount < car.passengers.length) {
-        alert(`Cannot set seats to ${seatCount} because there are already ${car.passengers.length} friends in this car!`);
+        showToast(`Cannot set ${config.capacityName} to ${seatCount} because there are already ${car.passengers.length} people in this ${config.groupName.toLowerCase()}!`, 'warning');
         return;
     }
 
@@ -672,9 +934,15 @@ function editSeats(carId) {
 
 function renderCars() {
     const container = document.getElementById('carsContainer');
+    const config = MODE_CONFIGS[currentMode];
 
     if (cars.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #999;">No cars yet! Add one above.</p>';
+        container.innerHTML = `
+            <div class="empty-state">
+                <span class="empty-state-emoji">${config.icon}</span>
+                <div class="empty-state-text">Add your first ${config.groupName.toLowerCase()} 😎</div>
+            </div>
+        `;
         return;
     }
 
@@ -708,11 +976,11 @@ function renderCars() {
                 ${canDeleteCar ? `<button class="delete-car" onclick="event.stopPropagation(); deleteCar(${car.id})">×</button>` : ''}
                 <div class="car-visual">${car.emoji}</div>
                 <div class="car-info">
-                    Driver: ${car.driver}${car.nickname ? ` – <em>'${car.nickname}'</em>` : ''}${isCarOwner ? ' <span style="color: #4CAF50; font-size: 0.8em;">(You)</span>' : ''}
+                    ${config.leaderName}: ${car.driver}${car.nickname ? ` – <em>'${car.nickname}'</em>` : ''}${isCarOwner ? ' <span style="color: #4CAF50; font-size: 0.8em;">(You)</span>' : ''}
                 </div>
                 ${vibePills ? `<div class="vibe-pills-container">${vibePills}</div>` : ''}
                 <div class="seats-info">
-                    ${car.passengers.length} / ${canEditCar ? `<span class="editable-seats" onclick="event.stopPropagation(); editSeats(${car.id})">${car.seats}</span>` : car.seats} seats filled ${isFull ? '<span style="color: #f44336; font-weight: bold;">(FULL!)</span>' : ''}
+                    ${car.passengers.length} / ${canEditCar ? `<span class="editable-seats" onclick="event.stopPropagation(); editSeats(${car.id})">${car.seats}</span>` : car.seats} ${config.capacityName} filled ${isFull ? '<span style="color: #f44336; font-weight: bold;">(FULL!)</span>' : ''}
                 </div>
                 <div class="passengers-list">
                     ${car.passengers.map(p => {
@@ -753,7 +1021,12 @@ function renderUnassigned() {
     const container = document.getElementById('unassignedList');
 
     if (unassignedPassengers.length === 0) {
-        container.innerHTML = '<p style="color: #999;">All friends are assigned!</p>';
+        container.innerHTML = `
+            <div class="empty-state">
+                <span class="empty-state-emoji">🎉</span>
+                <div class="empty-state-text">Everyone has a ride!</div>
+            </div>
+        `;
         return;
     }
 
@@ -778,7 +1051,8 @@ let selectedPassengerId = null;
 function selectPassengerForAssignment(passengerId) {
     selectedPassengerId = passengerId;
     const passenger = unassignedPassengers.find(p => p.id === passengerId);
-    alert(`Click on a car to assign ${passenger.name}! 🚗`);
+    const config = MODE_CONFIGS[currentMode];
+    showToast(`Click on a ${config.groupName.toLowerCase()} to assign ${passenger.name}! ${config.icon}`, 'info');
 }
 
 function handleCarClick(event, carId) {
@@ -791,7 +1065,7 @@ function handleCarClick(event, carId) {
 // Manual save function (auto-save happens automatically in background)
 function saveData() {
     autoSave();
-    alert('Saved to cloud! ☁️');
+    showToast('Saved to cloud! ☁️', 'success');
 }
 
 // Clear everything function
@@ -821,7 +1095,7 @@ function clearEverything() {
         renderCars();
         renderUnassigned();
 
-        alert('Everything cleared! 🧹');
+        showToast('Everything cleared! 🧹', 'success');
     }
 }
 
@@ -832,18 +1106,18 @@ let currentShareSummary = '';
 // Share event with friends
 async function shareEvent() {
     if (!currentUser) {
-        alert('You must be logged in to share events!');
+        showToast('You must be logged in to share events!', 'warning');
         return;
     }
 
     const eventName = document.getElementById('eventName').value.trim();
     if (!eventName) {
-        alert('Please add an event name before sharing!');
+        showToast('Please add an event name before sharing!', 'warning');
         return;
     }
 
     if (cars.length === 0 && unassignedPassengers.length === 0) {
-        alert('Please add some cars or friends before sharing!');
+        showToast('Please add some cars or friends before sharing!', 'warning');
         return;
     }
 
@@ -866,6 +1140,7 @@ async function shareEvent() {
             ownerId: currentUser.uid,
             ownerEmail: currentUser.email,
             eventName: sanitizeInput(eventName),
+            eventType: currentMode,
             eventDetails: eventDetails,
             cars: cars,
             unassignedPassengers: unassignedPassengers,
@@ -907,7 +1182,7 @@ async function shareEvent() {
 
     } catch (error) {
         console.error('Share error:', error);
-        alert('Failed to create share link. Please try again.');
+        showToast('Failed to create share link. Please try again.', 'error');
     }
 }
 
@@ -918,7 +1193,7 @@ function closeShareModal() {
 async function copyShareLink() {
     try {
         await navigator.clipboard.writeText(currentShareUrl);
-        alert('Share link copied to clipboard! 📋');
+        showToast('Share link copied to clipboard! 📋', 'success');
         closeShareModal();
     } catch (error) {
         prompt('Copy this link:', currentShareUrl);
@@ -1716,6 +1991,13 @@ function checkForSharedEvent() {
             // Load shared event into app
             document.getElementById('eventName').value = data.eventName || '';
 
+            // Load event type and update UI
+            if (data.eventType) {
+                currentMode = data.eventType;
+                document.getElementById('eventType').value = data.eventType;
+                updateUIForMode(data.eventType);
+            }
+
             // Load event details
             if (data.eventDetails) {
                 document.getElementById('eventDate').value = data.eventDetails.date || '';
@@ -1817,6 +2099,13 @@ function loadData() {
 
         console.log('Loading data from Firebase:', data);
         document.getElementById('eventName').value = data.eventName || '';
+
+        // Load event type and update UI
+        if (data.eventType) {
+            currentMode = data.eventType;
+            document.getElementById('eventType').value = data.eventType;
+            updateUIForMode(data.eventType);
+        }
 
         // Load event details
         if (data.eventDetails) {
