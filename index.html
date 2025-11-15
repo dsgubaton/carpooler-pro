@@ -860,6 +860,229 @@
             display: block;
         }
 
+        /* Onboarding Modal */
+        .onboarding-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 30000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .onboarding-overlay.active {
+            display: flex;
+        }
+
+        .onboarding-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .onboarding-modal h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .onboarding-event-name {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .onboarding-question {
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0 10px;
+            font-size: 1.1em;
+        }
+
+        .onboarding-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .onboarding-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .onboarding-subtext {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .onboarding-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .onboarding-btn {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .driver-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: scale(1.05);
+        }
+
+        .rider-btn:hover {
+            border-color: #4CAF50;
+            background: #f0fff4;
+            transform: scale(1.05);
+        }
+
+        .emoji-picker-mini {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .emoji-option {
+            font-size: 2em;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .emoji-option:hover {
+            background: #f0f0f0;
+            transform: scale(1.2);
+        }
+
+        .emoji-option.selected {
+            background: #667eea;
+            transform: scale(1.3);
+        }
+
+        .onboarding-btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .onboarding-btn-primary:hover {
+            background: #764ba2;
+            transform: scale(1.02);
+        }
+
+        .onboarding-btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+
+        .onboarding-btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .onboarding-car-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .onboarding-car-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .onboarding-car-card:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .onboarding-car-info {
+            flex: 1;
+        }
+
+        .onboarding-car-driver {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .onboarding-car-seats {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .onboarding-join-btn {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .onboarding-join-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .onboarding-join-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         /* Cookie Menu */
         .cookie-menu {
             display: none;
@@ -1011,6 +1234,46 @@
         <button class="menu-clear" onclick="clearEverything(); closeCookieMenu();">🧹 Clear Everything</button>
         <button class="menu-logout" onclick="handleLogout()">🚪 Logout</button>
         <button class="menu-close" onclick="closeCookieMenu()">✖ Close</button>
+    </div>
+
+    <!-- Onboarding Modal for Shared Links -->
+    <div class="onboarding-overlay" id="onboardingOverlay">
+        <div class="onboarding-modal">
+            <h2>🎉 Join the Carpool!</h2>
+            <p id="onboardingEventName" class="onboarding-event-name"></p>
+
+            <div id="onboardingStep1" class="onboarding-step">
+                <p class="onboarding-question">Who are you?</p>
+                <input type="text" id="onboardingName" class="onboarding-input" placeholder="Your name">
+                <p class="onboarding-subtext">Logged in as: <span id="onboardingEmail"></span></p>
+
+                <p class="onboarding-question">Are you driving or riding?</p>
+                <div class="onboarding-buttons">
+                    <button class="onboarding-btn driver-btn" onclick="selectRole('driver')">🚗 I'm Driving</button>
+                    <button class="onboarding-btn rider-btn" onclick="selectRole('rider')">🙋 I'm Riding</button>
+                </div>
+            </div>
+
+            <div id="onboardingStep2Driver" class="onboarding-step" style="display: none;">
+                <p class="onboarding-question">Set up your car</p>
+                <input type="number" id="onboardingSeats" class="onboarding-input" placeholder="How many seats?" min="1" max="20">
+                <div class="emoji-picker-mini">
+                    <span class="emoji-option" onclick="selectOnboardingEmoji('🚗')">🚗</span>
+                    <span class="emoji-option" onclick="selectOnboardingEmoji('🚙')">🚙</span>
+                    <span class="emoji-option" onclick="selectOnboardingEmoji('🚕')">🚕</span>
+                    <span class="emoji-option" onclick="selectOnboardingEmoji('🚐')">🚐</span>
+                    <span class="emoji-option" onclick="selectOnboardingEmoji('🛻')">🛻</span>
+                </div>
+                <input type="hidden" id="onboardingEmoji" value="🚙">
+                <button class="onboarding-btn-primary" onclick="completeDriverOnboarding()">Add My Car</button>
+            </div>
+
+            <div id="onboardingStep2Rider" class="onboarding-step" style="display: none;">
+                <p class="onboarding-question">Choose a car to join</p>
+                <div id="onboardingCarList" class="onboarding-car-list"></div>
+                <button class="onboarding-btn-secondary" onclick="skipRiderOnboarding()">I'll decide later</button>
+            </div>
+        </div>
     </div>
 
     <div class="container">
