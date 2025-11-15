@@ -60,6 +60,17 @@
             background: rgba(255, 255, 255, 0.9);
         }
 
+        .date-time-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 0;
+        }
+
+        .date-time-row .detail-group {
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
         .detail-group {
             margin-bottom: 20px;
         }
@@ -656,26 +667,24 @@
 
         .auth-tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
+            justify-content: center;
+            margin-top: 20px;
         }
 
         .auth-tab {
-            flex: 1;
-            padding: 10px;
-            background: #f5f5f5;
+            background: none;
             border: none;
-            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: bold;
-            color: #666;
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px;
             transition: all 0.2s;
         }
 
-        .auth-tab.active {
-            background: #667eea;
-            color: white;
+        .auth-tab:hover {
+            text-decoration: underline;
+            color: #764ba2;
         }
 
         .auth-form {
@@ -897,11 +906,6 @@
                 <span class="auth-car">🚙</span>
             </div>
 
-            <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
-                <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
-            </div>
-
             <div class="auth-error" id="authError"></div>
 
             <!-- Login Form -->
@@ -924,6 +928,10 @@
                 <input type="password" class="auth-input" id="loginPassword" placeholder="Password" required>
                 <button type="submit" class="auth-btn" id="loginBtn">Login</button>
                 <a href="#" class="forgot-password-link" onclick="showResetPassword(event)">Forgot Password?</a>
+
+                <div class="auth-tabs">
+                    <button type="button" class="auth-tab" onclick="switchAuthTab('signup')">Need an account? Sign Up</button>
+                </div>
             </form>
 
             <!-- Sign Up Form -->
@@ -946,6 +954,10 @@
                 <input type="password" class="auth-input" id="signupPassword" placeholder="Password (min 6 chars)" required minlength="6">
                 <input type="password" class="auth-input" id="signupConfirmPassword" placeholder="Confirm Password" required minlength="6">
                 <button type="submit" class="auth-btn" id="signupBtn">Create Account</button>
+
+                <div class="auth-tabs">
+                    <button type="button" class="auth-tab" onclick="switchAuthTab('login')">Have an account? Login</button>
+                </div>
             </form>
 
             <!-- Reset Password Form -->
@@ -975,14 +987,16 @@
         <div class="section event-details-section">
             <h2>📋 Event Details</h2>
 
-            <div class="detail-group">
-                <label>📅 Event Date & Time</label>
-                <input type="datetime-local" id="eventDateTime" class="detail-input">
-            </div>
+            <div class="date-time-row">
+                <div class="detail-group">
+                    <label>📅 Event Date</label>
+                    <input type="date" id="eventDate" class="detail-input">
+                </div>
 
-            <div class="detail-group">
-                <label>🕐 Meet Time (Optional)</label>
-                <input type="time" id="meetTime" class="detail-input" placeholder="e.g., 10:15 AM">
+                <div class="detail-group">
+                    <label>🕐 Event Time</label>
+                    <input type="time" id="eventTime" class="detail-input">
+                </div>
             </div>
 
             <div class="detail-group">
@@ -994,7 +1008,7 @@
                 <label>🗺️ Address (Optional)</label>
                 <div class="address-group">
                     <input type="text" id="eventAddress" class="detail-input" placeholder="e.g., 123 Ocean Blvd, San Diego, CA">
-                    <button class="maps-btn" onclick="openInMaps()">📍 Open in Maps</button>
+                    <button type="button" class="maps-btn" onclick="openInMaps()">📍 Open in Maps</button>
                 </div>
             </div>
 
@@ -1484,8 +1498,8 @@
 
             // Get event details
             const eventDetails = {
-                dateTime: document.getElementById('eventDateTime').value || '',
-                meetTime: document.getElementById('meetTime').value || '',
+                date: document.getElementById('eventDate').value || '',
+                time: document.getElementById('eventTime').value || '',
                 location: sanitizeInput(document.getElementById('eventLocation').value.trim()),
                 address: sanitizeInput(document.getElementById('eventAddress').value.trim()),
                 notes: sanitizeInput(document.getElementById('eventNotes').value.trim()),
@@ -1751,8 +1765,8 @@
                 document.getElementById('eventName').value = '';
 
                 // Clear event details
-                document.getElementById('eventDateTime').value = '';
-                document.getElementById('meetTime').value = '';
+                document.getElementById('eventDate').value = '';
+                document.getElementById('eventTime').value = '';
                 document.getElementById('eventLocation').value = '';
                 document.getElementById('eventAddress').value = '';
                 document.getElementById('eventNotes').value = '';
@@ -1797,8 +1811,8 @@
 
                 // Get event details
                 const eventDetails = {
-                    dateTime: document.getElementById('eventDateTime').value || '',
-                    meetTime: document.getElementById('meetTime').value || '',
+                    date: document.getElementById('eventDate').value || '',
+                    time: document.getElementById('eventTime').value || '',
                     location: sanitizeInput(document.getElementById('eventLocation').value.trim()),
                     address: sanitizeInput(document.getElementById('eventAddress').value.trim()),
                     notes: sanitizeInput(document.getElementById('eventNotes').value.trim()),
@@ -1825,15 +1839,15 @@
                 // Create event summary for sharing
                 let summary = `📢 ${eventName}`;
 
-                if (eventDetails.dateTime) {
-                    const date = new Date(eventDetails.dateTime);
-                    const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                    const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                if (eventDetails.date && eventDetails.time) {
+                    const dateObj = new Date(eventDetails.date + 'T' + eventDetails.time);
+                    const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                    const timeStr = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
                     summary += `\n📅 ${dateStr} at ${timeStr}`;
-                }
-
-                if (eventDetails.meetTime) {
-                    summary += `\n🕐 Meet at ${eventDetails.meetTime}`;
+                } else if (eventDetails.date) {
+                    const dateObj = new Date(eventDetails.date);
+                    const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                    summary += `\n📅 ${dateStr}`;
                 }
 
                 if (eventDetails.location) {
@@ -1893,8 +1907,8 @@
 
                     // Load event details
                     if (data.eventDetails) {
-                        document.getElementById('eventDateTime').value = data.eventDetails.dateTime || '';
-                        document.getElementById('meetTime').value = data.eventDetails.meetTime || '';
+                        document.getElementById('eventDate').value = data.eventDetails.date || '';
+                        document.getElementById('eventTime').value = data.eventDetails.time || '';
                         document.getElementById('eventLocation').value = data.eventDetails.location || '';
                         document.getElementById('eventAddress').value = data.eventDetails.address || '';
                         document.getElementById('eventNotes').value = data.eventDetails.notes || '';
@@ -1932,8 +1946,8 @@
 
                     // Get event details
                     const eventDetails = {
-                        dateTime: document.getElementById('eventDateTime').value || '',
-                        meetTime: document.getElementById('meetTime').value || '',
+                        date: document.getElementById('eventDate').value || '',
+                        time: document.getElementById('eventTime').value || '',
                         location: sanitizeInput(document.getElementById('eventLocation').value.trim()),
                         address: sanitizeInput(document.getElementById('eventAddress').value.trim()),
                         notes: sanitizeInput(document.getElementById('eventNotes').value.trim()),
@@ -1983,8 +1997,8 @@
 
                 // Load event details
                 if (data.eventDetails) {
-                    document.getElementById('eventDateTime').value = data.eventDetails.dateTime || '';
-                    document.getElementById('meetTime').value = data.eventDetails.meetTime || '';
+                    document.getElementById('eventDate').value = data.eventDetails.date || '';
+                    document.getElementById('eventTime').value = data.eventDetails.time || '';
                     document.getElementById('eventLocation').value = data.eventDetails.location || '';
                     document.getElementById('eventAddress').value = data.eventDetails.address || '';
                     document.getElementById('eventNotes').value = data.eventDetails.notes || '';
@@ -2008,8 +2022,8 @@
 
         // Add auto-save to event name and event details inputs
         document.getElementById('eventName').addEventListener('input', autoSave);
-        document.getElementById('eventDateTime').addEventListener('change', autoSave);
-        document.getElementById('meetTime').addEventListener('change', autoSave);
+        document.getElementById('eventDate').addEventListener('change', autoSave);
+        document.getElementById('eventTime').addEventListener('change', autoSave);
         document.getElementById('eventLocation').addEventListener('input', autoSave);
         document.getElementById('eventAddress').addEventListener('input', autoSave);
         document.getElementById('eventNotes').addEventListener('input', autoSave);
