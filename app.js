@@ -700,7 +700,7 @@ function renderCars() {
             vibePills += `<span class="vibe-pill">${car.energyLevel}</span>`;
         }
         if (car.singAlong) {
-            vibePills += `<span class="vibe-pill">🎤 Karaoke!</span>`;
+            vibePills += `<span class="vibe-pill">🎤 Caraoke!</span>`;
         }
 
         return `
@@ -1496,7 +1496,7 @@ function copyGroupChatSummary() {
         let vibes = [];
         if (car.playlistVibe) vibes.push(`🎶 ${car.playlistVibe}`);
         if (car.energyLevel) vibes.push(car.energyLevel);
-        if (car.singAlong) vibes.push('🎤 Karaoke!');
+        if (car.singAlong) vibes.push('🎤 Caraoke!');
 
         if (vibes.length > 0) {
             summary += `   Vibe: ${vibes.join(' | ')}\n`;
