@@ -55,6 +55,85 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
+        /* Event Details Styling */
+        .event-details-section {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .detail-group {
+            margin-bottom: 20px;
+        }
+
+        .detail-group label {
+            display: block;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .detail-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .detail-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .detail-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .detail-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .address-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .address-group .detail-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .maps-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .maps-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
         h2 {
             color: #667eea;
             margin-bottom: 15px;
@@ -550,10 +629,28 @@
             position: relative;
         }
 
+        .auth-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .auth-car {
+            font-size: 2em;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
         .auth-modal h2 {
             text-align: center;
             color: #667eea;
-            margin-bottom: 20px;
+            margin: 0;
             font-size: 1.6em;
         }
 
@@ -644,7 +741,7 @@
             text-decoration: underline;
         }
 
-        .auth-divider {
+        .auth-divider-inline {
             text-align: center;
             margin: 15px 0;
             color: #999;
@@ -652,8 +749,8 @@
             font-size: 13px;
         }
 
-        .auth-divider::before,
-        .auth-divider::after {
+        .auth-divider-inline::before,
+        .auth-divider-inline::after {
             content: '';
             position: absolute;
             top: 50%;
@@ -662,43 +759,46 @@
             background: #e0e0e0;
         }
 
-        .auth-divider::before {
+        .auth-divider-inline::before {
             left: 0;
         }
 
-        .auth-divider::after {
+        .auth-divider-inline::after {
             right: 0;
         }
 
-        #socialButtons {
+        .social-buttons-top {
             display: flex;
             gap: 10px;
-            justify-content: center;
+            margin-bottom: 15px;
         }
 
         .social-btn {
-            width: 50px;
-            height: 50px;
-            padding: 0;
+            flex: 1;
+            padding: 10px;
             border: 1px solid #e0e0e0;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
             transition: all 0.2s;
             background: white;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
         }
 
         .social-btn:hover {
             border-color: #667eea;
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .social-btn svg {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
         }
 
         .auth-error {
@@ -791,7 +891,11 @@
     <!-- Authentication Modal -->
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-modal">
-            <h2>Welcome To Carpooler!</h2>
+            <div class="auth-header">
+                <span class="auth-car">🚗</span>
+                <h2>Carpool Splitter</h2>
+                <span class="auth-car">🚙</span>
+            </div>
 
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
@@ -802,6 +906,20 @@
 
             <!-- Login Form -->
             <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+                <!-- Social Sign In First -->
+                <div class="social-buttons-top">
+                    <button type="button" class="social-btn google" onclick="handleGoogleSignIn()" title="Sign in with Google">
+                        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                        <span>Google</span>
+                    </button>
+                    <button type="button" class="social-btn apple" onclick="handleAppleSignIn()" title="Sign in with Apple">
+                        <span style="font-size: 20px;">🍎</span>
+                        <span>Apple</span>
+                    </button>
+                </div>
+
+                <div class="auth-divider-inline">or</div>
+
                 <input type="email" class="auth-input" id="loginEmail" placeholder="Email" required>
                 <input type="password" class="auth-input" id="loginPassword" placeholder="Password" required>
                 <button type="submit" class="auth-btn" id="loginBtn">Login</button>
@@ -810,6 +928,20 @@
 
             <!-- Sign Up Form -->
             <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
+                <!-- Social Sign In First -->
+                <div class="social-buttons-top">
+                    <button type="button" class="social-btn google" onclick="handleGoogleSignIn()" title="Sign in with Google">
+                        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                        <span>Google</span>
+                    </button>
+                    <button type="button" class="social-btn apple" onclick="handleAppleSignIn()" title="Sign in with Apple">
+                        <span style="font-size: 20px;">🍎</span>
+                        <span>Apple</span>
+                    </button>
+                </div>
+
+                <div class="auth-divider-inline">or</div>
+
                 <input type="email" class="auth-input" id="signupEmail" placeholder="Email" required>
                 <input type="password" class="auth-input" id="signupPassword" placeholder="Password (min 6 chars)" required minlength="6">
                 <input type="password" class="auth-input" id="signupConfirmPassword" placeholder="Confirm Password" required minlength="6">
@@ -822,18 +954,6 @@
                 <button type="submit" class="auth-btn" id="resetBtn">Send Reset Link</button>
                 <a href="#" class="forgot-password-link" onclick="switchAuthTab('login', event)">Back to Login</a>
             </form>
-
-            <div class="auth-divider" id="authDivider">or</div>
-
-            <!-- Social Sign In -->
-            <div id="socialButtons">
-                <button class="social-btn google" onclick="handleGoogleSignIn()" title="Sign in with Google">
-                    <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                </button>
-                <button class="social-btn apple" onclick="handleAppleSignIn()" title="Sign in with Apple">
-                    <span style="font-size: 28px;">🍎</span>
-                </button>
-            </div>
         </div>
     </div>
 
@@ -846,10 +966,48 @@
     </div>
 
     <div class="container">
-        <h1>🚗 CarBOOl Splitter 🚙</h1>
+        <h1>🚗 Carpool Splitter 🚙</h1>
         <p class="subtitle">Who's riding with who?! 🤪</p>
 
         <input type="text" id="eventName" class="event-input" placeholder="Event Name (e.g., Beach Trip!)">
+
+        <!-- Event Details Section -->
+        <div class="section event-details-section">
+            <h2>📋 Event Details</h2>
+
+            <div class="detail-group">
+                <label>📅 Event Date & Time</label>
+                <input type="datetime-local" id="eventDateTime" class="detail-input">
+            </div>
+
+            <div class="detail-group">
+                <label>🕐 Meet Time (Optional)</label>
+                <input type="time" id="meetTime" class="detail-input" placeholder="e.g., 10:15 AM">
+            </div>
+
+            <div class="detail-group">
+                <label>📍 Location</label>
+                <input type="text" id="eventLocation" class="detail-input" placeholder="e.g., Mission Beach">
+            </div>
+
+            <div class="detail-group">
+                <label>🗺️ Address (Optional)</label>
+                <div class="address-group">
+                    <input type="text" id="eventAddress" class="detail-input" placeholder="e.g., 123 Ocean Blvd, San Diego, CA">
+                    <button class="maps-btn" onclick="openInMaps()">📍 Open in Maps</button>
+                </div>
+            </div>
+
+            <div class="detail-group">
+                <label>📝 Notes</label>
+                <textarea id="eventNotes" class="detail-textarea" rows="3" placeholder="e.g., Bring towels, Parking is $20 cash, Leave by 8:15 sharp"></textarea>
+            </div>
+
+            <div class="detail-group">
+                <label>👥 Max Attendees (Optional)</label>
+                <input type="number" id="maxAttendees" class="detail-input" placeholder="e.g., 20" min="1">
+            </div>
+        </div>
 
         <div class="section">
             <h2>Add Car 🚗</h2>
@@ -995,8 +1153,6 @@
             const signupForm = document.getElementById('signupForm');
             const resetForm = document.getElementById('resetForm');
             const authError = document.getElementById('authError');
-            const authDivider = document.getElementById('authDivider');
-            const socialButtons = document.getElementById('socialButtons');
 
             // Clear error
             authError.classList.remove('show');
@@ -1010,20 +1166,14 @@
                 loginTab.classList.add('active');
                 signupTab.classList.remove('active');
                 loginForm.classList.add('active');
-                authDivider.style.display = 'block';
-                socialButtons.style.display = 'flex';
             } else if (tab === 'signup') {
                 signupTab.classList.add('active');
                 loginTab.classList.remove('active');
                 signupForm.classList.add('active');
-                authDivider.style.display = 'block';
-                socialButtons.style.display = 'flex';
             } else if (tab === 'reset') {
                 loginTab.classList.remove('active');
                 signupTab.classList.remove('active');
                 resetForm.classList.add('active');
-                authDivider.style.display = 'none';
-                socialButtons.style.display = 'none';
             }
         }
 
@@ -1332,10 +1482,21 @@
                 ? sanitizeInput(eventName.substring(0, 100))
                 : sanitizeInput(eventName);
 
+            // Get event details
+            const eventDetails = {
+                dateTime: document.getElementById('eventDateTime').value || '',
+                meetTime: document.getElementById('meetTime').value || '',
+                location: sanitizeInput(document.getElementById('eventLocation').value.trim()),
+                address: sanitizeInput(document.getElementById('eventAddress').value.trim()),
+                notes: sanitizeInput(document.getElementById('eventNotes').value.trim()),
+                maxAttendees: document.getElementById('maxAttendees').value || ''
+            };
+
             // Use transactions to update specific fields atomically
             // This prevents overwriting teammates' concurrent edits
             const updates = {};
             updates[`events/${eventId}/eventName`] = sanitizedEventName;
+            updates[`events/${eventId}/eventDetails`] = eventDetails;
             updates[`events/${eventId}/cars`] = cars;
             updates[`events/${eventId}/unassignedPassengers`] = unassignedPassengers;
             updates[`events/${eventId}/lastUpdated`] = firebase.database.ServerValue.TIMESTAMP;
@@ -1351,6 +1512,19 @@
                 alert('Save Error: ' + error.message + '\n\nCheck that:\n1. Firebase Realtime Database is enabled\n2. Security rules are published\n3. You have internet connection');
                 isSaving = false;
             });
+        }
+
+        // Open address in Maps
+        function openInMaps() {
+            const address = document.getElementById('eventAddress').value.trim();
+            if (!address) {
+                alert('Please enter an address first!');
+                return;
+            }
+
+            // Create Google Maps URL
+            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+            window.open(mapsUrl, '_blank');
         }
 
         function addCar() {
@@ -1576,6 +1750,14 @@
                 unassignedPassengers = [];
                 document.getElementById('eventName').value = '';
 
+                // Clear event details
+                document.getElementById('eventDateTime').value = '';
+                document.getElementById('meetTime').value = '';
+                document.getElementById('eventLocation').value = '';
+                document.getElementById('eventAddress').value = '';
+                document.getElementById('eventNotes').value = '';
+                document.getElementById('maxAttendees').value = '';
+
                 // Clear Firebase
                 dbRef.remove().then(() => {
                     console.log('Firebase data cleared');
@@ -1613,11 +1795,22 @@
                 // Generate unique share ID
                 const shareId = generateShareId();
 
+                // Get event details
+                const eventDetails = {
+                    dateTime: document.getElementById('eventDateTime').value || '',
+                    meetTime: document.getElementById('meetTime').value || '',
+                    location: sanitizeInput(document.getElementById('eventLocation').value.trim()),
+                    address: sanitizeInput(document.getElementById('eventAddress').value.trim()),
+                    notes: sanitizeInput(document.getElementById('eventNotes').value.trim()),
+                    maxAttendees: document.getElementById('maxAttendees').value || ''
+                };
+
                 // Save event to shared location
                 const sharedData = {
                     ownerId: currentUser.uid,
                     ownerEmail: currentUser.email,
                     eventName: sanitizeInput(eventName),
+                    eventDetails: eventDetails,
                     cars: cars,
                     unassignedPassengers: unassignedPassengers,
                     lastUpdated: firebase.database.ServerValue.TIMESTAMP,
@@ -1629,13 +1822,37 @@
                 // Generate share URL
                 const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
 
+                // Create event summary for sharing
+                let summary = `📢 ${eventName}`;
+
+                if (eventDetails.dateTime) {
+                    const date = new Date(eventDetails.dateTime);
+                    const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                    const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                    summary += `\n📅 ${dateStr} at ${timeStr}`;
+                }
+
+                if (eventDetails.meetTime) {
+                    summary += `\n🕐 Meet at ${eventDetails.meetTime}`;
+                }
+
+                if (eventDetails.location) {
+                    summary += `\n📍 ${eventDetails.location}`;
+                }
+
+                if (eventDetails.notes) {
+                    summary += `\n📝 ${eventDetails.notes}`;
+                }
+
+                summary += `\n\n🔗 ${shareUrl}\n\nAnyone with this link can view and edit this carpool.`;
+
                 // Try to copy to clipboard
                 try {
                     await navigator.clipboard.writeText(shareUrl);
-                    alert(`Share link copied to clipboard! 📋\n\n${shareUrl}\n\nAnyone with this link can view and edit this carpool.`);
+                    alert(`Share link copied to clipboard! 📋\n\n${summary}`);
                 } catch (clipboardError) {
                     // Clipboard API failed, show link in prompt
-                    prompt('Share this link with your friends! (Copy it manually):', shareUrl);
+                    prompt('Share this with your friends! (Copy it manually):', summary);
                 }
 
             } catch (error) {
@@ -1673,6 +1890,17 @@
 
                     // Load shared event into app
                     document.getElementById('eventName').value = data.eventName || '';
+
+                    // Load event details
+                    if (data.eventDetails) {
+                        document.getElementById('eventDateTime').value = data.eventDetails.dateTime || '';
+                        document.getElementById('meetTime').value = data.eventDetails.meetTime || '';
+                        document.getElementById('eventLocation').value = data.eventDetails.location || '';
+                        document.getElementById('eventAddress').value = data.eventDetails.address || '';
+                        document.getElementById('eventNotes').value = data.eventDetails.notes || '';
+                        document.getElementById('maxAttendees').value = data.eventDetails.maxAttendees || '';
+                    }
+
                     cars = data.cars || [];
                     unassignedPassengers = data.unassignedPassengers || [];
 
@@ -1702,8 +1930,19 @@
                         ? sanitizeInput(eventName.substring(0, 100))
                         : sanitizeInput(eventName);
 
+                    // Get event details
+                    const eventDetails = {
+                        dateTime: document.getElementById('eventDateTime').value || '',
+                        meetTime: document.getElementById('meetTime').value || '',
+                        location: sanitizeInput(document.getElementById('eventLocation').value.trim()),
+                        address: sanitizeInput(document.getElementById('eventAddress').value.trim()),
+                        notes: sanitizeInput(document.getElementById('eventNotes').value.trim()),
+                        maxAttendees: document.getElementById('maxAttendees').value || ''
+                    };
+
                     const updates = {
                         eventName: sanitizedEventName,
+                        eventDetails: eventDetails,
                         cars: cars,
                         unassignedPassengers: unassignedPassengers,
                         lastUpdated: firebase.database.ServerValue.TIMESTAMP
@@ -1741,6 +1980,17 @@
 
                 console.log('Loading data from Firebase:', data);
                 document.getElementById('eventName').value = data.eventName || '';
+
+                // Load event details
+                if (data.eventDetails) {
+                    document.getElementById('eventDateTime').value = data.eventDetails.dateTime || '';
+                    document.getElementById('meetTime').value = data.eventDetails.meetTime || '';
+                    document.getElementById('eventLocation').value = data.eventDetails.location || '';
+                    document.getElementById('eventAddress').value = data.eventDetails.address || '';
+                    document.getElementById('eventNotes').value = data.eventDetails.notes || '';
+                    document.getElementById('maxAttendees').value = data.eventDetails.maxAttendees || '';
+                }
+
                 cars = data.cars || [];
                 unassignedPassengers = data.unassignedPassengers || [];
 
@@ -1756,8 +2006,14 @@
             });
         }
 
-        // Add auto-save to event name input
+        // Add auto-save to event name and event details inputs
         document.getElementById('eventName').addEventListener('input', autoSave);
+        document.getElementById('eventDateTime').addEventListener('change', autoSave);
+        document.getElementById('meetTime').addEventListener('change', autoSave);
+        document.getElementById('eventLocation').addEventListener('input', autoSave);
+        document.getElementById('eventAddress').addEventListener('input', autoSave);
+        document.getElementById('eventNotes').addEventListener('input', autoSave);
+        document.getElementById('maxAttendees').addEventListener('input', autoSave);
 
         // Allow Enter key to submit
         document.getElementById('driverName').addEventListener('keypress', function(e) {
