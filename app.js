@@ -940,6 +940,127 @@ async function shareViaNative() {
     }
 }
 
+async function copySummaryText() {
+    const eventName = document.getElementById('eventName').value.trim() || 'Carpool Event';
+    const eventDate = document.getElementById('eventDate').value;
+    const eventTime = document.getElementById('eventTime').value;
+    const eventLocation = document.getElementById('eventLocation').value;
+
+    let summary = `✨ ${eventName} ✨\n\n`;
+
+    // Add date and time
+    if (eventDate && eventTime) {
+        const dateObj = new Date(eventDate + 'T' + eventTime);
+        const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        const timeStr = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        summary += `📅 ${dateStr} at ${timeStr}\n`;
+    }
+
+    // Add location
+    if (eventLocation) {
+        summary += `📍 ${eventLocation}\n`;
+    }
+
+    // Add share link
+    if (currentShareUrl) {
+        summary += `\n🔗 Join here: ${currentShareUrl}\n`;
+    }
+
+    // Add current cars
+    if (cars.length > 0) {
+        summary += `\n🚗 Current Cars:\n`;
+        cars.forEach(car => {
+            const carName = car.nickname ? `${car.driver} – '${car.nickname}'` : car.driver;
+            summary += `   ${car.emoji} ${carName} (${car.passengers.length}/${car.seats} seats)\n`;
+        });
+    }
+
+    summary += `\nSee you there! 🎉`;
+
+    // Copy to clipboard
+    try {
+        await navigator.clipboard.writeText(summary);
+        alert('📋 Beautiful summary copied! Paste it in your group chat.');
+        closeShareModal();
+    } catch (error) {
+        prompt('Copy this summary:', summary);
+    }
+}
+
+function addToCalendar() {
+    const eventName = document.getElementById('eventName').value.trim() || 'Carpool Event';
+    const eventDate = document.getElementById('eventDate').value;
+    const eventTime = document.getElementById('eventTime').value;
+    const eventLocation = document.getElementById('eventLocation').value;
+    const eventAddress = document.getElementById('eventAddress').value;
+
+    if (!eventDate || !eventTime) {
+        alert('Please set an event date and time first!');
+        return;
+    }
+
+    // Parse date and time
+    const startDate = new Date(eventDate + 'T' + eventTime);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Add 2 hours
+
+    // Format dates for .ics (YYYYMMDDTHHMMSS format)
+    const formatICSDate = (date) => {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return date.getFullYear() +
+               pad(date.getMonth() + 1) +
+               pad(date.getDate()) + 'T' +
+               pad(date.getHours()) +
+               pad(date.getMinutes()) +
+               pad(date.getSeconds());
+    };
+
+    const startStr = formatICSDate(startDate);
+    const endStr = formatICSDate(endDate);
+
+    // Build description with link and car info
+    let description = '';
+    if (currentShareUrl) {
+        description += `Join the carpool: ${currentShareUrl}\\n\\n`;
+    }
+    if (cars.length > 0) {
+        description += 'Cars:\\n';
+        cars.forEach(car => {
+            const carName = car.nickname ? `${car.driver} - '${car.nickname}'` : car.driver;
+            description += `${car.emoji} ${carName} (${car.passengers.length}/${car.seats} seats)\\n`;
+        });
+    }
+
+    // Create .ics content
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Carpool Splitter//EN
+BEGIN:VEVENT
+UID:${Date.now()}@carpoolsplitter.com
+DTSTAMP:${formatICSDate(new Date())}
+DTSTART:${startStr}
+DTEND:${endStr}
+SUMMARY:${eventName}
+DESCRIPTION:${description}
+LOCATION:${eventAddress || eventLocation || ''}
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR`;
+
+    // Create download link
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${eventName.replace(/[^a-z0-9]/gi, '_')}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    alert('📅 Calendar event downloaded! Open the file to add it to your calendar.');
+    closeShareModal();
+}
+
 // ============================================
 // AUTO-ASSIGN FEATURES
 // ============================================
