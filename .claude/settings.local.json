@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(firebase:*)",
+      "Bash(npm --version:*)",
+      "Bash(npm install:*)",
+      "Bash(ipconfig:*)",
+      "Bash(curl:*)",
+      "Bash(python -m http.server:*)",
+      "Bash(timeout /t 2)",
+      "Bash(netsh advfirewall firewall show rule name=\"Python 3.12\")",
+      "Bash(netsh advfirewall firewall add rule:*)",
+      "Bash(findstr:*)",
+      "Bash(python:*)",
+      "Bash(node -c:*)",
+      "Bash(git branch:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch:*)",
+      "Bash(git reset:*)",
+      "Bash(git push:*)",
+      "Bash(git show:*)",
+      "Bash(while read hash subject)",
+      "Bash(do echo \"Checking $hash...\")",
+      "Bash(done)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

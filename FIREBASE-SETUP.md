@@ -4,7 +4,7 @@
 
 1. **Go to Firebase Console**
    - Visit: https://console.firebase.google.com/
-   - Select your project: `carbooler`
+   - Select your project: `carpooler-pro`
 
 2. **Navigate to Realtime Database Rules**
    - In the left sidebar, click on "Realtime Database"
