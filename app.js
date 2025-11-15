@@ -1242,16 +1242,12 @@ function copyGroupChatSummary() {
         summary += `   ⛽ Gas: $${gasCost}/car | 🅿️ Parking: $${parkingFee}/car | 🎫 Tolls: $${tollsFees}/car\n`;
     }
 
-    // Copy to clipboard
-    try {
-        navigator.clipboard.writeText(summary).then(() => {
-            alert('📋 Copied to clipboard! Paste into your group chat.');
-        }).catch(err => {
-            prompt('Copy this text:', summary);
-        });
-    } catch (error) {
-        prompt('Copy this text:', summary);
-    }
+    // Open Messages app with pre-filled text
+    const encodedMessage = encodeURIComponent(summary);
+    const smsUrl = `sms:&body=${encodedMessage}`;
+
+    // Try to open Messages app
+    window.location.href = smsUrl;
 }
 
 // Generate random share ID
