@@ -127,6 +127,184 @@ const MODE_CONFIGS = {
 };
 
 let currentMode = 'carpool';
+let currentView = 'pro'; // 'simple' or 'pro'
+
+// ============================================
+// VIEW SWITCHING (Simple vs Pro)
+// ============================================
+
+function switchToSimpleView() {
+    currentView = 'simple';
+    document.getElementById('simpleViewContainer').style.display = 'block';
+    document.getElementById('proViewContainer').style.display = 'none';
+    document.getElementById('simpleViewBtn').classList.add('active');
+    document.getElementById('proViewBtn').classList.remove('active');
+
+    // Update simple view with current data
+    updateSimpleView();
+
+    // Save preference
+    localStorage.setItem('viewPreference', 'simple');
+}
+
+function switchToProView() {
+    currentView = 'pro';
+    document.getElementById('simpleViewContainer').style.display = 'none';
+    document.getElementById('proViewContainer').style.display = 'block';
+    document.getElementById('simpleViewBtn').classList.remove('active');
+    document.getElementById('proViewBtn').classList.add('active');
+
+    // Save preference
+    localStorage.setItem('viewPreference', 'pro');
+}
+
+function updateSimpleView() {
+    const config = MODE_CONFIGS[currentMode];
+
+    // Update event name
+    const eventName = document.getElementById('eventName').value || 'Your Event';
+    document.getElementById('simpleEventName').textContent = eventName;
+
+    // Update event details
+    const eventDate = document.getElementById('eventDate').value;
+    const eventTime = document.getElementById('eventTime').value;
+    const eventLocation = document.getElementById('eventLocation').value;
+    const eventNotes = document.getElementById('eventNotes').value;
+
+    document.getElementById('simpleEventDate').textContent = eventDate ?
+        new Date(eventDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) :
+        'Date not set';
+
+    document.getElementById('simpleEventTime').textContent = eventTime ?
+        new Date('2000-01-01T' + eventTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) :
+        'Time not set';
+
+    document.getElementById('simpleEventLocation').textContent = eventLocation || 'Location not set';
+
+    // Show/hide notes
+    if (eventNotes) {
+        document.getElementById('simpleNotesContainer').style.display = 'flex';
+        document.getElementById('simpleEventNotes').textContent = eventNotes;
+    } else {
+        document.getElementById('simpleNotesContainer').style.display = 'none';
+    }
+
+    // Find user's group
+    let userGroup = null;
+    let userPassenger = null;
+
+    if (currentUser) {
+        for (const car of cars) {
+            const passenger = car.passengers.find(p => p.userId === currentUser.uid);
+            if (passenger) {
+                userGroup = car;
+                userPassenger = passenger;
+                break;
+            }
+        }
+
+        // Check if user is unassigned
+        if (!userGroup) {
+            userPassenger = unassignedPassengers.find(p => p.userId === currentUser.uid);
+        }
+    }
+
+    // Update "Your Group" section
+    const yourGroupCard = document.getElementById('simpleYourGroup');
+    if (userGroup) {
+        yourGroupCard.innerHTML = `
+            <div class="simple-group-emoji">${userGroup.emoji}</div>
+            <div class="simple-group-info">
+                <div class="simple-group-name">${userGroup.nickname || `${config.leaderName}: ${userGroup.driver}`}</div>
+                <div class="simple-group-leader">${config.leaderName}: ${userGroup.driver}</div>
+            </div>
+        `;
+    } else if (userPassenger) {
+        yourGroupCard.innerHTML = `
+            <div class="simple-group-emoji">${config.icon}</div>
+            <div class="simple-group-info">
+                <div class="simple-group-name">Not assigned yet</div>
+                <div class="simple-group-leader">You're on the list! Host will assign you soon.</div>
+            </div>
+        `;
+    } else {
+        yourGroupCard.innerHTML = `
+            <div class="simple-group-emoji">${config.icon}</div>
+            <div class="simple-group-info">
+                <div class="simple-group-name">Not on the list</div>
+                <div class="simple-group-leader">Tap "I'm In" below to join!</div>
+            </div>
+        `;
+    }
+
+    // Update "All Groups" section
+    const allGroupsContainer = document.getElementById('simpleAllGroups');
+    if (cars.length > 0) {
+        allGroupsContainer.innerHTML = cars.map(car => {
+            const memberNames = car.passengers.map(p => p.name).join(', ');
+            const memberCount = car.passengers.length;
+            const spotsLeft = car.seats - memberCount;
+
+            return `
+                <div class="simple-all-group-card">
+                    <div class="simple-all-group-emoji">${car.emoji}</div>
+                    <div class="simple-all-group-info">
+                        <div class="simple-all-group-name">${car.nickname || `${config.leaderName}: ${car.driver}`}</div>
+                        <div class="simple-all-group-members">
+                            ${memberCount > 0 ? memberNames : 'No one yet'}
+                            ${spotsLeft > 0 ? `• ${spotsLeft} ${spotsLeft === 1 ? 'spot' : 'spots'} left` : '• Full!'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } else {
+        allGroupsContainer.innerHTML = '<p style="text-align: center; color: white; font-size: 1.1em;">No groups yet!</p>';
+    }
+}
+
+function handleSimpleRSVP(response) {
+    if (!currentUser) {
+        showToast('Please log in first!', 'warning');
+        return;
+    }
+
+    const config = MODE_CONFIGS[currentMode];
+
+    if (response === 'yes') {
+        // Check if user is already in the list
+        const existingPassenger = unassignedPassengers.find(p => p.userId === currentUser.uid);
+        const inCar = cars.some(car => car.passengers.some(p => p.userId === currentUser.uid));
+
+        if (existingPassenger || inCar) {
+            showToast('You\'re already on the list! 🎉', 'info');
+            return;
+        }
+
+        // Add user to unassigned passengers
+        const userName = currentUser.displayName || currentUser.email.split('@')[0];
+        unassignedPassengers.push({
+            id: Date.now(),
+            name: userName,
+            userId: currentUser.uid
+        });
+
+        showToast(`Great! You're in! 🎉 The host will assign you to a ${config.groupName.toLowerCase()}.`, 'success');
+        autoSave();
+        updateSimpleView();
+    } else if (response === 'no') {
+        // Remove user from any lists
+        unassignedPassengers = unassignedPassengers.filter(p => p.userId !== currentUser.uid);
+
+        cars.forEach(car => {
+            car.passengers = car.passengers.filter(p => p.userId !== currentUser.uid);
+        });
+
+        showToast('Okay, maybe next time! 👋', 'info');
+        autoSave();
+        updateSimpleView();
+    }
+}
 
 function handleEventTypeChange() {
     const eventType = document.getElementById('eventType').value;

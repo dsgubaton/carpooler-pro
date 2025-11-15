@@ -689,6 +689,235 @@ body.dark-mode .event-type-selector {
     border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* View Toggle */
+.view-toggle-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px auto 20px;
+    max-width: 400px;
+}
+
+.view-toggle-btn {
+    flex: 1;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.view-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.view-toggle-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+}
+
+body.dark-mode .view-toggle-btn {
+    background: rgba(60, 60, 80, 0.5);
+}
+
+body.dark-mode .view-toggle-btn.active {
+    background: linear-gradient(135deg, #4a5588 0%, #5a4a88 100%);
+}
+
+/* Simple View Styles */
+.simple-view-content {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.simple-event-title {
+    text-align: center;
+    font-size: 2em;
+    color: white;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.simple-event-details {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.simple-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.simple-detail-item:last-child {
+    border-bottom: none;
+}
+
+.simple-icon {
+    font-size: 1.8em;
+    flex-shrink: 0;
+}
+
+.simple-text {
+    font-size: 1.1em;
+    color: #333;
+    font-weight: 500;
+}
+
+.simple-your-group {
+    margin-bottom: 25px;
+}
+
+.simple-section-title {
+    text-align: center;
+    color: white;
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.simple-group-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.simple-group-emoji {
+    font-size: 3.5em;
+    flex-shrink: 0;
+}
+
+.simple-group-info {
+    flex: 1;
+}
+
+.simple-group-name {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.simple-group-leader {
+    font-size: 1em;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.simple-rsvp-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.simple-btn {
+    flex: 1;
+    padding: 20px;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.3em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.simple-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.simple-btn:active {
+    transform: translateY(0);
+}
+
+.simple-btn-yes {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+}
+
+.simple-btn-no {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
+}
+
+#simpleAllGroups {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.simple-all-group-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.simple-all-group-emoji {
+    font-size: 2.5em;
+}
+
+.simple-all-group-info {
+    flex: 1;
+}
+
+.simple-all-group-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 3px;
+}
+
+.simple-all-group-members {
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* Dark Mode - Simple View */
+body.dark-mode .simple-event-details {
+    background: rgba(45, 45, 68, 0.95);
+}
+
+body.dark-mode .simple-detail-item {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .simple-text {
+    color: #e0e0e0;
+}
+
+body.dark-mode .simple-all-group-card {
+    background: rgba(45, 45, 68, 0.95);
+}
+
+body.dark-mode .simple-all-group-name {
+    color: #8899ff;
+}
+
+body.dark-mode .simple-all-group-members {
+    color: #aaa;
+}
+
 .save-btn {
     background: rgba(76, 175, 80, 0.9);
     color: white;

@@ -176,6 +176,69 @@
         <h1>🚗 Carpool Splitter 🚙</h1>
         <p class="subtitle">Who's riding with who?! 🤪</p>
 
+        <!-- View Toggle -->
+        <div class="view-toggle-container">
+            <button class="view-toggle-btn active" id="simpleViewBtn" onclick="switchToSimpleView()">
+                👶 Simple View
+            </button>
+            <button class="view-toggle-btn" id="proViewBtn" onclick="switchToProView()">
+                🧠 Pro View
+            </button>
+        </div>
+
+        <!-- Simple View Container -->
+        <div id="simpleViewContainer" style="display: none;">
+            <div class="simple-view-content">
+                <h2 id="simpleEventName" class="simple-event-title">Beach Trip!</h2>
+
+                <div class="simple-event-details">
+                    <div class="simple-detail-item">
+                        <span class="simple-icon">📅</span>
+                        <span id="simpleEventDate" class="simple-text">Date not set</span>
+                    </div>
+                    <div class="simple-detail-item">
+                        <span class="simple-icon">🕐</span>
+                        <span id="simpleEventTime" class="simple-text">Time not set</span>
+                    </div>
+                    <div class="simple-detail-item">
+                        <span class="simple-icon">📍</span>
+                        <span id="simpleEventLocation" class="simple-text">Location not set</span>
+                    </div>
+                    <div class="simple-detail-item" id="simpleNotesContainer" style="display: none;">
+                        <span class="simple-icon">📝</span>
+                        <span id="simpleEventNotes" class="simple-text"></span>
+                    </div>
+                </div>
+
+                <div class="simple-your-group">
+                    <h3 class="simple-section-title">Your Group</h3>
+                    <div id="simpleYourGroup" class="simple-group-card">
+                        <div class="simple-group-emoji">🚗</div>
+                        <div class="simple-group-info">
+                            <div class="simple-group-name">Not assigned yet</div>
+                            <div class="simple-group-leader">Tap "I'm In" below to join!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="simple-rsvp-buttons">
+                    <button class="simple-btn simple-btn-yes" id="simpleImInBtn" onclick="handleSimpleRSVP('yes')">
+                        ✅ I'm In!
+                    </button>
+                    <button class="simple-btn simple-btn-no" id="simpleCantGoBtn" onclick="handleSimpleRSVP('no')">
+                        ❌ Can't Go
+                    </button>
+                </div>
+
+                <div id="simpleAllGroupsContainer" style="margin-top: 30px;">
+                    <h3 class="simple-section-title">All Groups</h3>
+                    <div id="simpleAllGroups"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pro View Container -->
+        <div id="proViewContainer">
         <input type="text" id="eventName" class="event-input" placeholder="Event Name (e.g., Beach Trip!)">
 
         <!-- Event Type Selector -->
@@ -398,6 +461,8 @@
         <!-- End Swipe Container -->
 
         <button class="save-btn" onclick="saveData()">✅ Auto Saved to Cloud</button>
+        </div>
+        <!-- End Pro View Container -->
     </div>
 
     <div class="dancing-cookie">🍪</div>
