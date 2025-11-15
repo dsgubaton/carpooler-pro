@@ -1882,8 +1882,9 @@ renderUnassigned();
 const cookie = document.querySelector('.dancing-cookie');
 let x = Math.random() * (window.innerWidth - 100);
 let y = Math.random() * (window.innerHeight - 100);
-let xSpeed = 2;
-let ySpeed = 2;
+let baseSpeed = 2;
+let xSpeed = baseSpeed;
+let ySpeed = baseSpeed;
 
 // Cookie menu functionality
 const cookieMenu = document.getElementById('cookieMenu');
@@ -1988,6 +1989,7 @@ function loadDarkModePreference() {
 loadDarkModePreference();
 
 function moveCookie() {
+    // Use base speed for consistent movement in both light and dark mode
     x += xSpeed;
     y += ySpeed;
 

@@ -737,7 +737,6 @@ button:active {
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
     animation: spin 2s linear infinite;
     transition: opacity 0.3s;
-    will-change: transform;
 }
 
 .dancing-cookie.hidden {
@@ -750,7 +749,6 @@ body.dark-mode .dancing-cookie {
     filter: drop-shadow(0 0 20px rgba(255, 200, 100, 0.8))
             drop-shadow(0 0 40px rgba(255, 150, 50, 0.6))
             drop-shadow(0 4px 8px rgba(0,0,0,0.5));
-    animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
@@ -1489,6 +1487,7 @@ body.dark-mode .cookie-menu {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    z-index: 10003;
 }
 
 body.dark-mode .menu-share {
