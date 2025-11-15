@@ -73,6 +73,12 @@
 
         .detail-group {
             margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .detail-group input,
+        .detail-group textarea {
+            max-width: 100%;
         }
 
         .detail-group label {
@@ -104,9 +110,29 @@
         /* Ensure date and time inputs stay within bounds */
         input[type="date"].detail-input,
         input[type="time"].detail-input {
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            padding: 12px !important;
+            margin: 0 !important;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        /* Override browser default date/time picker styles */
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            background: transparent;
+            bottom: 0;
+            color: transparent;
+            cursor: pointer;
+            height: auto;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: auto;
         }
 
         .detail-textarea {
