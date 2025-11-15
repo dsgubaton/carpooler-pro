@@ -715,53 +715,79 @@
             display: block;
         }
 
-        .user-profile {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
+        /* Cookie Menu */
+        .cookie-menu {
             display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            z-index: 10001;
+            min-width: 250px;
         }
 
-        .user-profile.show {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+        .cookie-menu.show {
+            display: block;
         }
 
-        .user-email {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px 15px;
-            border-radius: 10px;
-            color: #667eea;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .logout-btn {
-            background: #ff6b6b;
-            color: white;
-            padding: 10px 20px;
+        .cookie-menu button {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
             border: none;
             border-radius: 10px;
-            cursor: pointer;
+            font-size: 16px;
             font-weight: bold;
+            cursor: pointer;
             transition: all 0.3s;
         }
 
-        .logout-btn:hover {
+        .cookie-menu .menu-logout {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .cookie-menu .menu-logout:hover {
             background: #ee5a52;
+            transform: scale(1.05);
+        }
+
+        .cookie-menu .menu-share {
+            background: #667eea;
+            color: white;
+        }
+
+        .cookie-menu .menu-share:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .cookie-menu .menu-clear {
+            background: #ff9800;
+            color: white;
+        }
+
+        .cookie-menu .menu-clear:hover {
+            background: #e68900;
+            transform: scale(1.05);
+        }
+
+        .cookie-menu .menu-close {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .cookie-menu .menu-close:hover {
+            background: #ccc;
             transform: scale(1.05);
         }
     </style>
 </head>
 <body>
-    <!-- User Profile Display -->
-    <div class="user-profile" id="userProfile">
-        <div class="user-email" id="userEmail"></div>
-        <button class="logout-btn" onclick="handleLogout()">Logout</button>
-    </div>
-
     <!-- Authentication Modal -->
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-modal">
@@ -811,6 +837,14 @@
         </div>
     </div>
 
+    <!-- Cookie Menu -->
+    <div class="cookie-menu" id="cookieMenu">
+        <button class="menu-share" onclick="shareEvent(); closeCookieMenu();">🔗 Share with Friends</button>
+        <button class="menu-clear" onclick="clearEverything(); closeCookieMenu();">🧹 Clear Everything</button>
+        <button class="menu-logout" onclick="handleLogout()">🚪 Logout</button>
+        <button class="menu-close" onclick="closeCookieMenu()">✖ Close</button>
+    </div>
+
     <div class="container">
         <h1>🚗 CarBOOl Splitter 🚙</h1>
         <p class="subtitle">Who's riding with who?! 🤪</p>
@@ -843,10 +877,6 @@
         </div>
 
         <button class="save-btn" onclick="saveData()">✅ Auto Saved to Cloud</button>
-
-        <button class="share-btn" onclick="shareEvent()">🔗 Share with Friends</button>
-
-        <button class="clear-btn" onclick="clearEverything()">🧹 Clear Everything</button>
     </div>
 
     <div class="dancing-cookie">🍪</div>
@@ -938,10 +968,6 @@
                 // Hide auth modal
                 document.getElementById('authOverlay').classList.remove('active');
 
-                // Show user profile
-                document.getElementById('userProfile').classList.add('show');
-                document.getElementById('userEmail').textContent = user.email;
-
                 // Show cookie again
                 if (cookie) cookie.classList.remove('hidden');
 
@@ -953,7 +979,6 @@
                 console.log('No user signed in');
 
                 document.getElementById('authOverlay').classList.add('active');
-                document.getElementById('userProfile').classList.remove('show');
 
                 // Hide cookie while auth modal is showing
                 if (cookie) cookie.classList.add('hidden');
@@ -1759,21 +1784,28 @@
         let xSpeed = 2;
         let ySpeed = 2;
 
+        // Cookie menu functionality
+        const cookieMenu = document.getElementById('cookieMenu');
+
         // TETRIS Easter Egg - Click cookie 6 times to spell TETRIS
         let cookieClickCount = 0;
-        const tetrisLetters = ['T', 'E', 'T', 'R', 'I', 'S'];
+        const tetrisLetters = ['S', 'I', 'R', 'T', 'E', 'T'];
         const tetrisRevealDiv = document.getElementById('tetrisReveal');
         let cookieResetTimer = null;
 
         cookie.addEventListener('click', function(e) {
             e.stopPropagation(); // Prevent event bubbling
 
-            // Don't start game if auth modal is showing
+            // Don't show menu or start game if auth modal is showing
             const authOverlay = document.getElementById('authOverlay');
             if (authOverlay.classList.contains('active')) {
                 return;
             }
 
+            // Show menu centered on screen
+            cookieMenu.classList.add('show');
+
+            // Easter egg counter
             cookieClickCount++;
 
             // Reset timer - if you don't complete within 5 seconds, reset
@@ -1789,8 +1821,9 @@
                 tetrisRevealDiv.textContent = currentWord;
 
                 if (cookieClickCount === 6) {
-                    // Spell complete! Launch Tetris
+                    // Spell complete! Launch game
                     clearTimeout(cookieResetTimer);
+                    closeCookieMenu();
 
                     setTimeout(() => {
                         tetrisRevealDiv.textContent = '';
@@ -1800,6 +1833,17 @@
                 }
             }
         });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!cookieMenu.contains(e.target) && e.target !== cookie) {
+                cookieMenu.classList.remove('show');
+            }
+        });
+
+        function closeCookieMenu() {
+            cookieMenu.classList.remove('show');
+        }
 
         function moveCookie() {
             x += xSpeed;
