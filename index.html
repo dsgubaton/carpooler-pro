@@ -1987,23 +1987,34 @@
                     car.passengers = [];
                 }
                 const isFull = car.passengers.length >= car.seats;
+
+                // Permission checks
+                const isEventOwner = currentShareId && eventOwnerId && currentUser && currentUser.uid === eventOwnerId;
+                const isCarOwner = currentUser && car.ownerId && currentUser.uid === car.ownerId;
+                const canEditCar = !currentShareId || isEventOwner || isCarOwner;
+                const canDeleteCar = !currentShareId || isEventOwner || isCarOwner;
+
                 return `
                     <div class="car-card ${isFull ? 'full' : ''}" onclick="handleCarClick(event, ${car.id})">
-                        <button class="delete-car" onclick="event.stopPropagation(); deleteCar(${car.id})">×</button>
+                        ${canDeleteCar ? `<button class="delete-car" onclick="event.stopPropagation(); deleteCar(${car.id})">×</button>` : ''}
                         <div class="car-visual">${car.emoji}</div>
                         <div class="car-info">
-                            Driver: ${car.driver}
+                            Driver: ${car.driver}${isCarOwner ? ' <span style="color: #4CAF50; font-size: 0.8em;">(You)</span>' : ''}
                         </div>
                         <div class="seats-info">
-                            ${car.passengers.length} / <span class="editable-seats" onclick="event.stopPropagation(); editSeats(${car.id})">${car.seats}</span> seats filled ${isFull ? '(FULL!)' : ''}
+                            ${car.passengers.length} / ${canEditCar ? `<span class="editable-seats" onclick="event.stopPropagation(); editSeats(${car.id})">${car.seats}</span>` : car.seats} seats filled ${isFull ? '<span style="color: #f44336; font-weight: bold;">(FULL!)</span>' : ''}
                         </div>
                         <div class="passengers-list">
-                            ${car.passengers.map(p => `
-                                <div class="passenger-tag" onclick="event.stopPropagation(); removePassengerFromCar(${car.id}, ${p.id})">
-                                    ${p.name}
-                                    <span class="remove">×</span>
-                                </div>
-                            `).join('')}
+                            ${car.passengers.map(p => {
+                                const isThisUser = currentUser && p.userId && currentUser.uid === p.userId;
+                                const canRemovePassenger = !currentShareId || isEventOwner || isCarOwner || isThisUser;
+                                return `
+                                    <div class="passenger-tag" ${canRemovePassenger ? `onclick="event.stopPropagation(); removePassengerFromCar(${car.id}, ${p.id})"` : ''}>
+                                        ${p.name}${isThisUser ? ' <span style="color: #4CAF50;">(You)</span>' : ''}
+                                        ${canRemovePassenger ? '<span class="remove">×</span>' : ''}
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
                     </div>
                 `;
@@ -2190,12 +2201,158 @@
             return id;
         }
 
+        // ============================================
+        // ONBOARDING SYSTEM FOR SHARED EVENTS
+        // ============================================
+
+        let currentShareId = null;
+        let eventOwnerId = null;
+        let selectedOnboardingEmoji = '🚙';
+
+        function selectRole(role) {
+            document.getElementById('onboardingStep1').style.display = 'none';
+
+            if (role === 'driver') {
+                document.getElementById('onboardingStep2Driver').style.display = 'block';
+            } else {
+                document.getElementById('onboardingStep2Rider').style.display = 'block';
+                renderOnboardingCarList();
+            }
+        }
+
+        function selectOnboardingEmoji(emoji) {
+            selectedOnboardingEmoji = emoji;
+            document.getElementById('onboardingEmoji').value = emoji;
+
+            // Update visual selection
+            document.querySelectorAll('.emoji-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        function completeDriverOnboarding() {
+            const name = document.getElementById('onboardingName').value.trim();
+            const seats = parseInt(document.getElementById('onboardingSeats').value);
+
+            if (!name) {
+                alert('Please enter your name!');
+                return;
+            }
+
+            if (!seats || seats < 1 || seats > 20) {
+                alert('Please enter valid number of seats (1-20)!');
+                return;
+            }
+
+            // Add car with user's UID
+            const newCar = {
+                driver: name,
+                seats: seats,
+                emoji: selectedOnboardingEmoji,
+                passengers: [],
+                ownerId: currentUser.uid,
+                ownerEmail: currentUser.email
+            };
+
+            cars.push(newCar);
+            autoSave();
+
+            // Close onboarding
+            document.getElementById('onboardingOverlay').classList.remove('active');
+            alert(`🎉 Your car has been added! You're driving with ${seats} seats available.`);
+        }
+
+        function renderOnboardingCarList() {
+            const carList = document.getElementById('onboardingCarList');
+            carList.innerHTML = '';
+
+            if (cars.length === 0) {
+                carList.innerHTML = '<p style="text-align: center; color: #666;">No cars yet. Be the first driver!</p>';
+                return;
+            }
+
+            cars.forEach((car, index) => {
+                const availableSeats = car.seats - car.passengers.length;
+                const isFull = availableSeats <= 0;
+
+                const cardHTML = `
+                    <div class="onboarding-car-card">
+                        <div class="onboarding-car-info">
+                            <div class="onboarding-car-driver">${car.emoji} ${car.driver}</div>
+                            <div class="onboarding-car-seats">${availableSeats} of ${car.seats} seats available</div>
+                        </div>
+                        <button class="onboarding-join-btn"
+                                onclick="joinCarFromOnboarding(${index})"
+                                ${isFull ? 'disabled' : ''}>
+                            ${isFull ? 'FULL' : 'Join'}
+                        </button>
+                    </div>
+                `;
+                carList.innerHTML += cardHTML;
+            });
+        }
+
+        function joinCarFromOnboarding(carIndex) {
+            const name = document.getElementById('onboardingName').value.trim();
+
+            if (!name) {
+                alert('Please enter your name!');
+                return;
+            }
+
+            // Add passenger with user's UID
+            const passenger = {
+                name: name,
+                userId: currentUser.uid,
+                userEmail: currentUser.email
+            };
+
+            cars[carIndex].passengers.push(passenger);
+            autoSave();
+
+            // Close onboarding
+            document.getElementById('onboardingOverlay').classList.remove('active');
+            alert(`🎉 You've joined ${cars[carIndex].driver}'s car!`);
+        }
+
+        function skipRiderOnboarding() {
+            document.getElementById('onboardingOverlay').classList.remove('active');
+        }
+
+        function showOnboardingModal(eventName) {
+            // Check if user already has a spot
+            let userHasSpot = false;
+
+            cars.forEach(car => {
+                if (car.ownerId === currentUser.uid) {
+                    userHasSpot = true;
+                }
+                if (car.passengers && car.passengers.some(p => p.userId === currentUser.uid)) {
+                    userHasSpot = true;
+                }
+            });
+
+            if (unassignedPassengers && unassignedPassengers.some(p => p.userId === currentUser.uid)) {
+                userHasSpot = true;
+            }
+
+            // Only show onboarding if user doesn't have a spot
+            if (!userHasSpot) {
+                document.getElementById('onboardingEventName').textContent = eventName || 'this event';
+                document.getElementById('onboardingName').value = currentUser.displayName || currentUser.email.split('@')[0];
+                document.getElementById('onboardingEmail').textContent = currentUser.email;
+                document.getElementById('onboardingOverlay').classList.add('active');
+            }
+        }
+
         // Check if user is accessing a shared event
         function checkForSharedEvent() {
             const params = new URLSearchParams(window.location.search);
             const shareId = params.get('share');
 
             if (shareId) {
+                currentShareId = shareId;
                 console.log('Loading shared event:', shareId);
 
                 // Load shared event data
@@ -2222,6 +2379,7 @@
 
                     cars = data.cars || [];
                     unassignedPassengers = data.unassignedPassengers || [];
+                    eventOwnerId = data.ownerId || null;
 
                     // Ensure all cars have passengers arrays
                     cars.forEach(car => {
@@ -2232,6 +2390,11 @@
 
                     renderCars();
                     renderUnassigned();
+
+                    // Show onboarding modal if user is new to this event
+                    if (currentUser) {
+                        showOnboardingModal(data.eventName);
+                    }
 
                     // Show sharing info
                     const ownerInfo = data.ownerEmail ? ` (shared by ${data.ownerEmail})` : '';
