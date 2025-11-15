@@ -1276,6 +1276,31 @@
         </div>
     </div>
 
+    <!-- Share Modal -->
+    <div class="onboarding-overlay" id="shareModal">
+        <div class="onboarding-modal" style="max-width: 400px;">
+            <button class="close-modal" onclick="closeShareModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 28px; cursor: pointer; color: #999;">×</button>
+            <h2>📢 Share Event</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">How would you like to share?</p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button onclick="shareViaText()" style="padding: 15px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    💬 Send Text Message
+                </button>
+
+                <button onclick="shareViaNative()" style="padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    📱 Share to App
+                </button>
+
+                <button onclick="copyShareLink()" style="padding: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    🔗 Copy Link
+                </button>
+            </div>
+
+            <p style="color: #999; font-size: 12px; margin-top: 20px; text-align: center;">Anyone with the link can view and join</p>
+        </div>
+    </div>
+
     <div class="container">
         <h1>🚗 Carpool Splitter 🚙</h1>
         <p class="subtitle">Who's riding with who?! 🤪</p>
@@ -1337,6 +1362,10 @@
             </div>
 
             <h3 style="margin-top: 20px; color: #ff6b6b;">Unassigned Friends:</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                <button class="auto-assign-btn" onclick="autoFillCars()" style="flex: 1; min-width: 150px; padding: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">✨ Auto-fill Cars</button>
+                <button class="auto-assign-btn" onclick="randomizeCars()" style="flex: 1; min-width: 150px; padding: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">🎲 Randomize Cars</button>
+            </div>
             <div class="unassigned-passengers" id="unassignedList"></div>
         </div>
 
@@ -2103,6 +2132,10 @@
             }
         }
 
+        // Share data (global for modal access)
+        let currentShareUrl = '';
+        let currentShareSummary = '';
+
         // Share event with friends
         async function shareEvent() {
             if (!currentUser) {
@@ -2150,45 +2183,224 @@
                 await database.ref(`shared/${shareId}`).set(sharedData);
 
                 // Generate share URL
-                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
+                currentShareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
 
                 // Create event summary for sharing
-                let summary = `📢 ${eventName}`;
+                currentShareSummary = `📢 ${eventName}`;
 
                 if (eventDetails.date && eventDetails.time) {
                     const dateObj = new Date(eventDetails.date + 'T' + eventDetails.time);
                     const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
                     const timeStr = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-                    summary += `\n📅 ${dateStr} at ${timeStr}`;
+                    currentShareSummary += `\n📅 ${dateStr} at ${timeStr}`;
                 } else if (eventDetails.date) {
                     const dateObj = new Date(eventDetails.date);
                     const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                    summary += `\n📅 ${dateStr}`;
+                    currentShareSummary += `\n📅 ${dateStr}`;
                 }
 
                 if (eventDetails.location) {
-                    summary += `\n📍 ${eventDetails.location}`;
+                    currentShareSummary += `\n📍 ${eventDetails.location}`;
                 }
 
                 if (eventDetails.notes) {
-                    summary += `\n📝 ${eventDetails.notes}`;
+                    currentShareSummary += `\n📝 ${eventDetails.notes}`;
                 }
 
-                summary += `\n\n🔗 ${shareUrl}\n\nAnyone with this link can view and edit this carpool.`;
+                currentShareSummary += `\n\n🔗 ${currentShareUrl}\n\nAnyone with this link can view and join this carpool!`;
 
-                // Try to copy to clipboard
-                try {
-                    await navigator.clipboard.writeText(shareUrl);
-                    alert(`Share link copied to clipboard! 📋\n\n${summary}`);
-                } catch (clipboardError) {
-                    // Clipboard API failed, show link in prompt
-                    prompt('Share this with your friends! (Copy it manually):', summary);
-                }
+                // Open share modal
+                document.getElementById('shareModal').classList.add('active');
 
             } catch (error) {
                 console.error('Share error:', error);
                 alert('Failed to create share link. Please try again.');
             }
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.remove('active');
+        }
+
+        async function copyShareLink() {
+            try {
+                await navigator.clipboard.writeText(currentShareUrl);
+                alert('Share link copied to clipboard! 📋');
+                closeShareModal();
+            } catch (error) {
+                prompt('Copy this link:', currentShareUrl);
+            }
+        }
+
+        function shareViaText() {
+            // SMS sharing - works on iOS and Android
+            const smsBody = encodeURIComponent(currentShareSummary);
+            window.location.href = `sms:?&body=${smsBody}`;
+            closeShareModal();
+        }
+
+        async function shareViaNative() {
+            // Try native share API (works on mobile and some desktop browsers)
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Join my carpool!',
+                        text: currentShareSummary,
+                        url: currentShareUrl
+                    });
+                    closeShareModal();
+                } catch (error) {
+                    // User cancelled or error occurred
+                    if (error.name !== 'AbortError') {
+                        console.error('Share error:', error);
+                        // Fall back to copy
+                        copyShareLink();
+                    }
+                }
+            } else {
+                alert('Native sharing not supported. Copying link instead!');
+                copyShareLink();
+            }
+        }
+
+        // ============================================
+        // AUTO-ASSIGN FEATURES
+        // ============================================
+
+        function autoFillCars() {
+            if (unassignedPassengers.length === 0) {
+                alert('No unassigned friends to auto-fill! 🤷');
+                return;
+            }
+
+            if (cars.length === 0) {
+                alert('Please add at least one car first! 🚗');
+                return;
+            }
+
+            // Calculate available seats in each car
+            const availableSeats = cars.map((car, index) => ({
+                carIndex: index,
+                available: car.seats - car.passengers.length
+            })).filter(car => car.available > 0);
+
+            if (availableSeats.length === 0) {
+                alert('All cars are full! Add more cars or increase seat counts. 🚙');
+                return;
+            }
+
+            // Total available seats
+            const totalAvailable = availableSeats.reduce((sum, car) => sum + car.available, 0);
+
+            if (unassignedPassengers.length > totalAvailable) {
+                if (!confirm(`Only ${totalAvailable} seats available, but ${unassignedPassengers.length} friends unassigned. Fill as many as possible?`)) {
+                    return;
+                }
+            }
+
+            // Fill cars evenly
+            let passengersToAssign = [...unassignedPassengers];
+            let carPointer = 0;
+
+            while (passengersToAssign.length > 0 && availableSeats.length > 0) {
+                const currentCar = availableSeats[carPointer];
+
+                if (currentCar.available > 0) {
+                    // Assign passenger to car
+                    const passenger = passengersToAssign.shift();
+                    cars[currentCar.carIndex].passengers.push(passenger);
+                    currentCar.available--;
+                }
+
+                // Move to next car (circular)
+                carPointer = (carPointer + 1) % availableSeats.length;
+
+                // Remove cars that are now full
+                availableSeats.forEach((car, index) => {
+                    if (car.available <= 0) {
+                        availableSeats.splice(index, 1);
+                        if (carPointer >= availableSeats.length) {
+                            carPointer = 0;
+                        }
+                    }
+                });
+            }
+
+            // Update unassigned list
+            unassignedPassengers = passengersToAssign;
+
+            renderCars();
+            renderUnassigned();
+            autoSave();
+
+            const assigned = unassignedPassengers.length === 0
+                ? 'All friends assigned! ✨'
+                : `Assigned friends to available seats! ${unassignedPassengers.length} still unassigned.`;
+            alert(assigned);
+        }
+
+        function randomizeCars() {
+            if (cars.length === 0) {
+                alert('Please add at least one car first! 🚗');
+                return;
+            }
+
+            // Collect all passengers from all cars
+            let allPassengers = [];
+            cars.forEach(car => {
+                allPassengers = allPassengers.concat(car.passengers);
+            });
+
+            // Add unassigned passengers
+            allPassengers = allPassengers.concat(unassignedPassengers);
+
+            if (allPassengers.length === 0) {
+                alert('No passengers to randomize! 👥');
+                return;
+            }
+
+            if (!confirm('🎲 Shuffle all passengers randomly across cars? (Drivers stay fixed)')) {
+                return;
+            }
+
+            // Shuffle passengers
+            for (let i = allPassengers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allPassengers[i], allPassengers[j]] = [allPassengers[j], allPassengers[i]];
+            }
+
+            // Clear all cars
+            cars.forEach(car => {
+                car.passengers = [];
+            });
+
+            // Reassign passengers
+            let passengerIndex = 0;
+            let carIndex = 0;
+
+            while (passengerIndex < allPassengers.length) {
+                const car = cars[carIndex];
+
+                if (car.passengers.length < car.seats) {
+                    car.passengers.push(allPassengers[passengerIndex]);
+                    passengerIndex++;
+                } else {
+                    carIndex++;
+                    if (carIndex >= cars.length) {
+                        // No more space in any car
+                        break;
+                    }
+                }
+            }
+
+            // Any remaining passengers go to unassigned
+            unassignedPassengers = allPassengers.slice(passengerIndex);
+
+            renderCars();
+            renderUnassigned();
+            autoSave();
+
+            alert('🎲 Passengers randomized! Drivers stayed in their cars. ✨');
         }
 
         // Generate random share ID
