@@ -1,20 +1,84 @@
-# Firebase Security Rules Setup
+# Firebase Setup Guide for Carpool Splitter
 
-## How to Deploy Security Rules to Firebase
+## ⚠️ IMPORTANT: Complete ALL Steps Below to Fix Permission Errors
+
+## Step 1: Enable Firebase Realtime Database
 
 1. **Go to Firebase Console**
    - Visit: https://console.firebase.google.com/
    - Select your project: `carpooler-pro`
 
-2. **Navigate to Realtime Database Rules**
+2. **Create Realtime Database**
    - In the left sidebar, click on "Realtime Database"
-   - Click on the "Rules" tab at the top
+   - Click "Create Database"
+   - Choose location: **United States (us-central1)** or closest to you
+   - Start in **"Locked mode"** (we'll set custom rules next)
+   - Click "Enable"
 
-3. **Copy and Paste the Rules**
-   - Open the file: `firebase-security-rules.json`
-   - Copy the entire contents
+## Step 2: Deploy Security Rules
+
+1. **Navigate to Rules Tab**
+   - In Realtime Database page, click on the "Rules" tab at the top
+
+2. **Copy and Paste These Rules**
+   - Copy the rules below (or from `firebase-security-rules.json`)
    - Paste into the Firebase Rules editor
    - Click "Publish"
+
+```json
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "shared": {
+      "$shareId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    }
+  }
+}
+```
+
+## Step 3: Enable Authentication Methods
+
+1. **Go to Authentication**
+   - In the left sidebar, click on "Authentication"
+   - Click "Get started" if you haven't set it up yet
+
+2. **Enable Email/Password**
+   - Click the "Sign-in method" tab
+   - Find "Email/Password" and click it
+   - Toggle "Enable" ON
+   - Click "Save"
+
+3. **Enable Google Sign-In**
+   - Click "Google" in the sign-in methods list
+   - Toggle "Enable" ON
+   - Enter a support email (e.g., your email)
+   - Click "Save"
+
+4. **Enable Apple Sign-In (Optional)**
+   - Click "Apple" in the sign-in methods list
+   - Toggle "Enable" ON
+   - Click "Save"
+
+## Step 4: Add Authorized Domains
+
+1. **Go to Authentication Settings**
+   - Click the "Settings" tab (gear icon)
+   - Scroll down to "Authorized domains"
+
+2. **Add Your Domains**
+   - Click "Add domain"
+   - Add: `localhost`
+   - Click "Add domain" again
+   - Add: `dsgubaton.github.io`
+   - Click "Add"
 
 ## What These Rules Do
 

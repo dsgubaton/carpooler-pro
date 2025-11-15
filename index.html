@@ -987,16 +987,14 @@
         <div class="section event-details-section">
             <h2>📋 Event Details</h2>
 
-            <div class="date-time-row">
-                <div class="detail-group">
-                    <label>📅 Event Date</label>
-                    <input type="date" id="eventDate" class="detail-input">
-                </div>
+            <div class="detail-group">
+                <label>📅 Event Date</label>
+                <input type="date" id="eventDate" class="detail-input">
+            </div>
 
-                <div class="detail-group">
-                    <label>🕐 Event Time</label>
-                    <input type="time" id="eventTime" class="detail-input">
-                </div>
+            <div class="detail-group">
+                <label>🕐 Event Time</label>
+                <input type="time" id="eventTime" class="detail-input">
             </div>
 
             <div class="detail-group">
@@ -1436,8 +1434,10 @@
             }
         }
 
-        eventId = getOrCreateEventId();
-        dbRef = database.ref(`events/${eventId}`);
+        // Don't initialize dbRef here - wait for authentication
+        // eventId and dbRef will be set in initializeUserData() after sign-in
+        eventId = null;
+        dbRef = null;
 
         let cars = [];
         let unassignedPassengers = [];
