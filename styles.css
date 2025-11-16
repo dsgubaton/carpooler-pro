@@ -2113,3 +2113,120 @@ body.dark-mode .empty-state-text {
         font-size: 1.4em;
     }
 }
+
+/* Print Layout Styles */
+.print-layout {
+    display: none;
+}
+
+@media print {
+    /* Hide everything except print layout */
+    body > *:not(#printLayout) {
+        display: none !important;
+    }
+
+    .print-layout {
+        display: block !important;
+        background: white;
+        color: black;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    .print-header {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 3px solid #333;
+        padding-bottom: 15px;
+    }
+
+    .print-header h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .print-details {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .print-detail-item {
+        margin: 5px 0;
+    }
+
+    .print-groups {
+        margin-top: 20px;
+    }
+
+    .print-group {
+        page-break-inside: avoid;
+        margin-bottom: 20px;
+        border: 2px solid #333;
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .print-group-header {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .print-group-emoji {
+        font-size: 24px;
+    }
+
+    .print-leader {
+        font-size: 16px;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 8px;
+    }
+
+    .print-members {
+        font-size: 14px;
+        line-height: 1.8;
+        color: #333;
+    }
+
+    .print-member {
+        padding: 5px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .print-member:last-child {
+        border-bottom: none;
+    }
+
+    .print-empty {
+        color: #999;
+        font-style: italic;
+    }
+
+    /* Page break control */
+    @page {
+        margin: 1cm;
+    }
+}
+
+/* QR Code Modal Styles */
+#qrCodeContainer {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#qrCodeContainer canvas,
+#qrCodeContainer img {
+    max-width: 100%;
+    height: auto;
+}

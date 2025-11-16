@@ -147,6 +147,10 @@
             <p style="color: #666; font-size: 14px; margin-bottom: 20px;">How would you like to share?</p>
 
             <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button onclick="showQRCode()" style="padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    📱 Show QR Code
+                </button>
+
                 <button onclick="shareViaText()" style="padding: 15px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     💬 Send Text Message
                 </button>
@@ -166,10 +170,36 @@
                 <button onclick="addToCalendar()" style="padding: 15px; background: linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     📅 Add to Calendar
                 </button>
+
+                <button onclick="printRoster()" style="padding: 15px; background: linear-gradient(135deg, #34a853 0%, #2e7d44 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    🖨️ Print Roster
+                </button>
             </div>
 
             <p style="color: #999; font-size: 12px; margin-top: 20px; text-align: center;">Anyone with the link can view and join</p>
         </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div class="onboarding-overlay" id="qrModal" style="display: none;">
+        <div class="onboarding-modal" style="max-width: 400px; text-align: center;">
+            <button class="close-modal" onclick="closeQRModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 28px; cursor: pointer; color: #999;">×</button>
+            <h2>📱 Scan to Join</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Have guests scan this QR code to join instantly</p>
+
+            <div id="qrCodeContainer" style="display: flex; justify-content: center; margin: 20px 0; padding: 20px; background: white; border-radius: 12px;"></div>
+
+            <p style="color: #999; font-size: 12px; margin-top: 20px;">Perfect for classrooms, gyms, and parties!</p>
+        </div>
+    </div>
+
+    <!-- Print Layout (hidden until print) -->
+    <div id="printLayout" class="print-layout">
+        <div class="print-header">
+            <h1 id="printEventName"></h1>
+            <div class="print-details" id="printDetails"></div>
+        </div>
+        <div class="print-groups" id="printGroups"></div>
     </div>
 
     <div class="container">
@@ -582,6 +612,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
     <script src="app.js"></script>
 </body>

@@ -1553,6 +1553,110 @@ function closeShareModal() {
     document.getElementById('shareModal').classList.remove('active');
 }
 
+// ============================================
+// QR CODE FUNCTIONALITY
+// ============================================
+
+function showQRCode() {
+    const qrModal = document.getElementById('qrModal');
+    const qrContainer = document.getElementById('qrCodeContainer');
+
+    // Clear previous QR code
+    qrContainer.innerHTML = '';
+
+    // Generate QR code with the share URL
+    const qr = new QRCode(qrContainer, {
+        text: currentShareUrl,
+        width: 256,
+        height: 256,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    // Show modal
+    qrModal.style.display = 'flex';
+
+    showToast('QR Code generated! 📱', 'success');
+}
+
+function closeQRModal() {
+    document.getElementById('qrModal').style.display = 'none';
+}
+
+// ============================================
+// PRINT ROSTER FUNCTIONALITY
+// ============================================
+
+function printRoster() {
+    const config = MODE_CONFIGS[currentMode];
+    const eventName = document.getElementById('eventName').value.trim() || 'Event Roster';
+    const eventDate = document.getElementById('eventDate').value;
+    const eventTime = document.getElementById('eventTime').value;
+    const eventLocation = document.getElementById('eventLocation').value;
+    const eventAddress = document.getElementById('eventAddress').value;
+
+    // Populate print layout
+    document.getElementById('printEventName').textContent = eventName;
+
+    // Build details section
+    let detailsHTML = '';
+    if (eventDate) {
+        const dateObj = new Date(eventDate + 'T00:00:00');
+        detailsHTML += `<div class="print-detail-item">📅 Date: ${dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>`;
+    }
+    if (eventTime) {
+        const timeObj = new Date(`2000-01-01T${eventTime}`);
+        detailsHTML += `<div class="print-detail-item">🕐 Time: ${timeObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</div>`;
+    }
+    if (eventLocation) {
+        detailsHTML += `<div class="print-detail-item">📍 Location: ${eventLocation}</div>`;
+    }
+    if (eventAddress) {
+        detailsHTML += `<div class="print-detail-item">🗺️ Address: ${eventAddress}</div>`;
+    }
+
+    document.getElementById('printDetails').innerHTML = detailsHTML;
+
+    // Build groups section
+    let groupsHTML = '';
+
+    if (cars.length === 0) {
+        groupsHTML = `<div class="print-empty">No ${config.groupNamePlural.toLowerCase()} have been created yet.</div>`;
+    } else {
+        cars.forEach((car, index) => {
+            const passengers = car.passengers || [];
+
+            groupsHTML += `
+                <div class="print-group">
+                    <div class="print-group-header">
+                        <span class="print-group-emoji">${car.emoji || config.defaultEmoji}</span>
+                        <span>${config.groupName} ${index + 1}${car.nickname ? ` - "${car.nickname}"` : ''}</span>
+                    </div>
+                    <div class="print-leader">${config.leaderName}: ${car.driver}</div>
+                    <div class="print-members">
+                        ${passengers.length > 0
+                            ? passengers.map(p => `<div class="print-member">• ${p.name}</div>`).join('')
+                            : '<div class="print-empty">No members yet</div>'
+                        }
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById('printGroups').innerHTML = groupsHTML;
+
+    // Trigger print dialog
+    showToast('Opening print dialog... 🖨️', 'success');
+    closeShareModal();
+
+    // Small delay to ensure modal is closed before printing
+    setTimeout(() => {
+        window.print();
+    }, 300);
+}
+
 async function copyShareLink() {
     try {
         await navigator.clipboard.writeText(currentShareUrl);
