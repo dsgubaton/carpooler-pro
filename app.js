@@ -1558,25 +1558,39 @@ function closeShareModal() {
 // ============================================
 
 function showQRCode() {
+    console.log('showQRCode called');
+    console.log('QRCode available:', typeof QRCode !== 'undefined');
+    console.log('currentShareUrl:', currentShareUrl);
+
     // Check if QR code library is loaded
     if (typeof QRCode === 'undefined') {
+        console.error('QRCode library not available');
         showToast('QR Code library not loaded. Please refresh the page.', 'error');
         return;
     }
 
     // Check if we have a share URL
     if (!currentShareUrl) {
-        showToast('Please save your event first before generating QR code.', 'error');
+        console.error('No share URL available');
+        showToast('No share URL available. Please try sharing again.', 'error');
         return;
     }
 
     const qrModal = document.getElementById('qrModal');
     const qrContainer = document.getElementById('qrCodeContainer');
 
+    if (!qrModal || !qrContainer) {
+        console.error('QR modal elements not found');
+        showToast('QR modal not found in page.', 'error');
+        return;
+    }
+
     // Clear previous QR code
     qrContainer.innerHTML = '';
 
     try {
+        console.log('Generating QR code for:', currentShareUrl);
+
         // Generate QR code with the share URL
         const qr = new QRCode(qrContainer, {
             text: currentShareUrl,
@@ -1587,9 +1601,11 @@ function showQRCode() {
             correctLevel: QRCode.CorrectLevel.H
         });
 
-        // Show modal
+        // Show modal using classList for consistency
+        qrModal.classList.add('active');
         qrModal.style.display = 'flex';
 
+        console.log('QR code generated successfully');
         showToast('QR Code generated! 📱', 'success');
     } catch (error) {
         console.error('QR Code generation error:', error);
@@ -1598,7 +1614,11 @@ function showQRCode() {
 }
 
 function closeQRModal() {
-    document.getElementById('qrModal').style.display = 'none';
+    const qrModal = document.getElementById('qrModal');
+    if (qrModal) {
+        qrModal.classList.remove('active');
+        qrModal.style.display = 'none';
+    }
 }
 
 // ============================================
@@ -1606,15 +1626,36 @@ function closeQRModal() {
 // ============================================
 
 function printRoster() {
-    const config = MODE_CONFIGS[currentMode];
-    const eventName = document.getElementById('eventName').value.trim() || 'Event Roster';
-    const eventDate = document.getElementById('eventDate').value;
-    const eventTime = document.getElementById('eventTime').value;
-    const eventLocation = document.getElementById('eventLocation').value;
-    const eventAddress = document.getElementById('eventAddress').value;
+    console.log('printRoster called');
+    console.log('currentMode:', currentMode);
+    console.log('cars:', cars);
 
-    // Populate print layout
-    document.getElementById('printEventName').textContent = eventName;
+    try {
+        const config = MODE_CONFIGS[currentMode];
+        if (!config) {
+            console.error('Invalid mode:', currentMode);
+            showToast('Event mode configuration error.', 'error');
+            return;
+        }
+
+        const eventName = document.getElementById('eventName').value.trim() || 'Event Roster';
+        const eventDate = document.getElementById('eventDate').value;
+        const eventTime = document.getElementById('eventTime').value;
+        const eventLocation = document.getElementById('eventLocation').value;
+        const eventAddress = document.getElementById('eventAddress').value;
+
+        const printEventNameEl = document.getElementById('printEventName');
+        const printDetailsEl = document.getElementById('printDetails');
+        const printGroupsEl = document.getElementById('printGroups');
+
+        if (!printEventNameEl || !printDetailsEl || !printGroupsEl) {
+            console.error('Print layout elements not found');
+            showToast('Print layout not found in page.', 'error');
+            return;
+        }
+
+        // Populate print layout
+        printEventNameEl.textContent = eventName;
 
     // Build details section
     let detailsHTML = '';
@@ -1633,45 +1674,51 @@ function printRoster() {
         detailsHTML += `<div class="print-detail-item">🗺️ Address: ${eventAddress}</div>`;
     }
 
-    document.getElementById('printDetails').innerHTML = detailsHTML;
+        printDetailsEl.innerHTML = detailsHTML;
 
-    // Build groups section
-    let groupsHTML = '';
+        // Build groups section
+        let groupsHTML = '';
 
-    if (cars.length === 0) {
-        groupsHTML = `<div class="print-empty">No ${config.groupNamePlural.toLowerCase()} have been created yet.</div>`;
-    } else {
-        cars.forEach((car, index) => {
-            const passengers = car.passengers || [];
+        if (cars.length === 0) {
+            groupsHTML = `<div class="print-empty">No ${config.groupNamePlural.toLowerCase()} have been created yet.</div>`;
+        } else {
+            cars.forEach((car, index) => {
+                const passengers = car.passengers || [];
 
-            groupsHTML += `
-                <div class="print-group">
-                    <div class="print-group-header">
-                        <span class="print-group-emoji">${car.emoji || config.defaultEmoji}</span>
-                        <span>${config.groupName} ${index + 1}${car.nickname ? ` - "${car.nickname}"` : ''}</span>
+                groupsHTML += `
+                    <div class="print-group">
+                        <div class="print-group-header">
+                            <span class="print-group-emoji">${car.emoji || config.defaultEmoji}</span>
+                            <span>${config.groupName} ${index + 1}${car.nickname ? ` - "${car.nickname}"` : ''}</span>
+                        </div>
+                        <div class="print-leader">${config.leaderName}: ${car.driver}</div>
+                        <div class="print-members">
+                            ${passengers.length > 0
+                                ? passengers.map(p => `<div class="print-member">• ${p.name}</div>`).join('')
+                                : '<div class="print-empty">No members yet</div>'
+                            }
+                        </div>
                     </div>
-                    <div class="print-leader">${config.leaderName}: ${car.driver}</div>
-                    <div class="print-members">
-                        ${passengers.length > 0
-                            ? passengers.map(p => `<div class="print-member">• ${p.name}</div>`).join('')
-                            : '<div class="print-empty">No members yet</div>'
-                        }
-                    </div>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
+
+        printGroupsEl.innerHTML = groupsHTML;
+
+        // Trigger print dialog
+        console.log('Print layout populated, opening print dialog');
+        showToast('Opening print dialog... 🖨️', 'success');
+        closeShareModal();
+
+        // Small delay to ensure modal is closed before printing
+        setTimeout(() => {
+            window.print();
+        }, 300);
+
+    } catch (error) {
+        console.error('Print roster error:', error);
+        showToast('Failed to generate print roster: ' + error.message, 'error');
     }
-
-    document.getElementById('printGroups').innerHTML = groupsHTML;
-
-    // Trigger print dialog
-    showToast('Opening print dialog... 🖨️', 'success');
-    closeShareModal();
-
-    // Small delay to ensure modal is closed before printing
-    setTimeout(() => {
-        window.print();
-    }, 300);
 }
 
 async function copyShareLink() {
