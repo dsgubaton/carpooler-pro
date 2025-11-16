@@ -1558,26 +1558,43 @@ function closeShareModal() {
 // ============================================
 
 function showQRCode() {
+    // Check if QR code library is loaded
+    if (typeof QRCode === 'undefined') {
+        showToast('QR Code library not loaded. Please refresh the page.', 'error');
+        return;
+    }
+
+    // Check if we have a share URL
+    if (!currentShareUrl) {
+        showToast('Please save your event first before generating QR code.', 'error');
+        return;
+    }
+
     const qrModal = document.getElementById('qrModal');
     const qrContainer = document.getElementById('qrCodeContainer');
 
     // Clear previous QR code
     qrContainer.innerHTML = '';
 
-    // Generate QR code with the share URL
-    const qr = new QRCode(qrContainer, {
-        text: currentShareUrl,
-        width: 256,
-        height: 256,
-        colorDark: '#000000',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.H
-    });
+    try {
+        // Generate QR code with the share URL
+        const qr = new QRCode(qrContainer, {
+            text: currentShareUrl,
+            width: 256,
+            height: 256,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
 
-    // Show modal
-    qrModal.style.display = 'flex';
+        // Show modal
+        qrModal.style.display = 'flex';
 
-    showToast('QR Code generated! 📱', 'success');
+        showToast('QR Code generated! 📱', 'success');
+    } catch (error) {
+        console.error('QR Code generation error:', error);
+        showToast('Failed to generate QR code: ' + error.message, 'error');
+    }
 }
 
 function closeQRModal() {
