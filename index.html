@@ -308,7 +308,74 @@
 
             <div class="detail-group">
                 <label>👥 Max Attendees</label>
-                <input type="number" id="maxAttendees" class="detail-input" placeholder="e.g., 20" min="1">
+                <input type="number" id="maxAttendees" class="detail-input" placeholder="e.g., 20" min="1" onchange="autoSave(); updateRSVPDisplay();">
+            </div>
+        </div>
+
+        <!-- RSVP Section -->
+        <div class="section rsvp-section">
+            <h2 style="margin-bottom: 15px;">📋 RSVP & Headcount</h2>
+
+            <!-- Your RSVP -->
+            <div class="your-rsvp-container">
+                <p style="font-weight: bold; color: #667eea; margin-bottom: 10px;">Your Status:</p>
+                <div class="rsvp-toggle-group">
+                    <button class="rsvp-toggle-btn" id="rsvpGoingBtn" onclick="handleRSVP('going')">
+                        ✅ Going
+                    </button>
+                    <button class="rsvp-toggle-btn" id="rsvpMaybeBtn" onclick="handleRSVP('maybe')">
+                        🤔 Maybe
+                    </button>
+                    <button class="rsvp-toggle-btn" id="rsvpNotGoingBtn" onclick="handleRSVP('not-going')">
+                        ❌ Not Going
+                    </button>
+                </div>
+            </div>
+
+            <!-- Headcount Display -->
+            <div class="headcount-display">
+                <div class="headcount-stat">
+                    <div class="headcount-number" id="goingCount">0</div>
+                    <div class="headcount-label">Going</div>
+                </div>
+                <div class="headcount-stat">
+                    <div class="headcount-number" id="maybeCount">0</div>
+                    <div class="headcount-label">Maybe</div>
+                </div>
+                <div class="headcount-stat">
+                    <div class="headcount-number" id="maxAttendeesDisplay">-</div>
+                    <div class="headcount-label">Max</div>
+                </div>
+            </div>
+
+            <!-- Capacity Warning -->
+            <div id="capacityWarning" class="capacity-warning" style="display: none;">
+                <span style="font-size: 1.2em;">⚠️</span>
+                <span>Event is at capacity! New RSVPs will be added to waitlist.</span>
+            </div>
+
+            <!-- Waitlist Section -->
+            <div id="waitlistSection" style="display: none; margin-top: 20px;">
+                <h3 style="color: #667eea; margin-bottom: 10px;">📝 Waitlist (<span id="waitlistCount">0</span>)</h3>
+                <div id="waitlistContainer" class="waitlist-container"></div>
+            </div>
+
+            <!-- RSVP Lists -->
+            <div class="rsvp-lists">
+                <div class="rsvp-list-section">
+                    <h3 style="color: #4CAF50;">✅ Going (<span id="goingListCount">0</span>)</h3>
+                    <div id="goingList" class="rsvp-list"></div>
+                </div>
+
+                <div class="rsvp-list-section">
+                    <h3 style="color: #ff9800;">🤔 Maybe (<span id="maybeListCount">0</span>)</h3>
+                    <div id="maybeList" class="rsvp-list"></div>
+                </div>
+
+                <div class="rsvp-list-section">
+                    <h3 style="color: #f44336;">❌ Not Going (<span id="notGoingListCount">0</span>)</h3>
+                    <div id="notGoingList" class="rsvp-list"></div>
+                </div>
             </div>
         </div>
             </div>

@@ -918,6 +918,197 @@ body.dark-mode .simple-all-group-members {
     color: #aaa;
 }
 
+/* RSVP Section Styles */
+.rsvp-section {
+    margin-top: 10px;
+}
+
+.your-rsvp-container {
+    margin-bottom: 20px;
+}
+
+.rsvp-toggle-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.rsvp-toggle-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.rsvp-toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.rsvp-toggle-btn.active {
+    border-width: 3px;
+}
+
+.rsvp-toggle-btn.active#rsvpGoingBtn {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    border-color: #4CAF50;
+    color: white;
+}
+
+.rsvp-toggle-btn.active#rsvpMaybeBtn {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    border-color: #ff9800;
+    color: white;
+}
+
+.rsvp-toggle-btn.active#rsvpNotGoingBtn {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    border-color: #f44336;
+    color: white;
+}
+
+.headcount-display {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+    margin: 20px 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    border-radius: 12px;
+}
+
+.headcount-stat {
+    text-align: center;
+    flex: 1;
+}
+
+.headcount-number {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.headcount-label {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+}
+
+.capacity-warning {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+    padding: 12px 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+.waitlist-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.waitlist-item {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 12px 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #ff9800;
+}
+
+.waitlist-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.waitlist-promote-btn {
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.waitlist-promote-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.rsvp-lists {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.rsvp-list-section h3 {
+    font-size: 1em;
+    margin-bottom: 10px;
+}
+
+.rsvp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 50px;
+}
+
+.rsvp-list-item {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    color: #333;
+}
+
+/* Dark Mode - RSVP */
+body.dark-mode .rsvp-toggle-btn {
+    background: rgba(60, 60, 80, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+body.dark-mode .headcount-display {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+body.dark-mode .headcount-number {
+    color: #8899ff;
+}
+
+body.dark-mode .headcount-label {
+    color: #aaa;
+}
+
+body.dark-mode .waitlist-item {
+    background: rgba(45, 45, 68, 0.9);
+}
+
+body.dark-mode .waitlist-name {
+    color: #e0e0e0;
+}
+
+body.dark-mode .rsvp-list-item {
+    background: rgba(60, 60, 80, 0.5);
+    color: #e0e0e0;
+}
+
 .save-btn {
     background: rgba(76, 175, 80, 0.9);
     color: white;

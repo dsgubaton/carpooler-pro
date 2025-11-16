@@ -843,6 +843,190 @@ let selectedEmoji = '🚙';
 let isSaving = false;
 let eventStatus = 'draft'; // 'draft' or 'finalized'
 
+// RSVP System
+let rsvps = {
+    going: [],      // Array of { userId, name, email, timestamp }
+    maybe: [],
+    notGoing: [],
+    waitlist: []    // Array of { userId, name, email, timestamp }
+};
+
+// ============================================
+// RSVP SYSTEM
+// ============================================
+
+function handleRSVP(status) {
+    if (!currentUser) {
+        showToast('Please log in to RSVP!', 'warning');
+        return;
+    }
+
+    const userId = currentUser.uid;
+    const userName = currentUser.displayName || currentUser.email.split('@')[0];
+    const userEmail = currentUser.email;
+
+    // Remove user from all lists first
+    rsvps.going = rsvps.going.filter(r => r.userId !== userId);
+    rsvps.maybe = rsvps.maybe.filter(r => r.userId !== userId);
+    rsvps.notGoing = rsvps.notGoing.filter(r => r.userId !== userId);
+    rsvps.waitlist = rsvps.waitlist.filter(r => r.userId !== userId);
+
+    // Check capacity
+    const maxAttendees = parseInt(document.getElementById('maxAttendees').value) || 0;
+    const goingCount = rsvps.going.length;
+
+    if (status === 'going') {
+        if (maxAttendees > 0 && goingCount >= maxAttendees) {
+            // Add to waitlist
+            rsvps.waitlist.push({
+                userId,
+                name: userName,
+                email: userEmail,
+                timestamp: Date.now()
+            });
+            showToast('Event is at capacity! You\'ve been added to the waitlist. 📝', 'info');
+        } else {
+            // Add to going list
+            rsvps.going.push({
+                userId,
+                name: userName,
+                email: userEmail,
+                timestamp: Date.now()
+            });
+            showToast('Great! You\'re in! ✅', 'success');
+        }
+    } else if (status === 'maybe') {
+        rsvps.maybe.push({
+            userId,
+            name: userName,
+            email: userEmail,
+            timestamp: Date.now()
+        });
+        showToast('Marked as Maybe 🤔', 'info');
+    } else if (status === 'not-going') {
+        rsvps.notGoing.push({
+            userId,
+            name: userName,
+            email: userEmail,
+            timestamp: Date.now()
+        });
+        showToast('Marked as Not Going ❌', 'info');
+    }
+
+    // Update UI and save
+    updateRSVPDisplay();
+    autoSave();
+}
+
+function updateRSVPDisplay() {
+    // Update button states
+    document.querySelectorAll('.rsvp-toggle-btn').forEach(btn => btn.classList.remove('active'));
+
+    if (currentUser) {
+        const userId = currentUser.uid;
+        if (rsvps.going.some(r => r.userId === userId)) {
+            document.getElementById('rsvpGoingBtn').classList.add('active');
+        } else if (rsvps.maybe.some(r => r.userId === userId)) {
+            document.getElementById('rsvpMaybeBtn').classList.add('active');
+        } else if (rsvps.notGoing.some(r => r.userId === userId)) {
+            document.getElementById('rsvpNotGoingBtn').classList.add('active');
+        } else if (rsvps.waitlist.some(r => r.userId === userId)) {
+            document.getElementById('rsvpGoingBtn').classList.add('active');
+        }
+    }
+
+    // Update headcount
+    document.getElementById('goingCount').textContent = rsvps.going.length;
+    document.getElementById('maybeCount').textContent = rsvps.maybe.length;
+
+    const maxAttendees = parseInt(document.getElementById('maxAttendees').value) || 0;
+    document.getElementById('maxAttendeesDisplay').textContent = maxAttendees > 0 ? maxAttendees : '-';
+
+    // Show/hide capacity warning
+    if (maxAttendees > 0 && rsvps.going.length >= maxAttendees) {
+        document.getElementById('capacityWarning').style.display = 'flex';
+    } else {
+        document.getElementById('capacityWarning').style.display = 'none';
+    }
+
+    // Update waitlist
+    const waitlistSection = document.getElementById('waitlistSection');
+    const waitlistContainer = document.getElementById('waitlistContainer');
+
+    if (rsvps.waitlist.length > 0) {
+        waitlistSection.style.display = 'block';
+        document.getElementById('waitlistCount').textContent = rsvps.waitlist.length;
+
+        // Check if user is event owner
+        const isOwner = currentShareId ? (eventOwnerId === currentUser.uid) : true;
+
+        waitlistContainer.innerHTML = rsvps.waitlist.map(person => `
+            <div class="waitlist-item">
+                <span class="waitlist-name">${person.name}</span>
+                ${isOwner ? `<button class="waitlist-promote-btn" onclick="promoteFromWaitlist('${person.userId}')">✅ Promote</button>` : ''}
+            </div>
+        `).join('');
+    } else {
+        waitlistSection.style.display = 'none';
+    }
+
+    // Update RSVP lists
+    document.getElementById('goingListCount').textContent = rsvps.going.length;
+    document.getElementById('maybeListCount').textContent = rsvps.maybe.length;
+    document.getElementById('notGoingListCount').textContent = rsvps.notGoing.length;
+
+    document.getElementById('goingList').innerHTML = rsvps.going.length > 0 ?
+        rsvps.going.map(p => `<div class="rsvp-list-item">${p.name}</div>`).join('') :
+        '<div class="rsvp-list-item" style="opacity: 0.5;">No one yet</div>';
+
+    document.getElementById('maybeList').innerHTML = rsvps.maybe.length > 0 ?
+        rsvps.maybe.map(p => `<div class="rsvp-list-item">${p.name}</div>`).join('') :
+        '<div class="rsvp-list-item" style="opacity: 0.5;">No one yet</div>';
+
+    document.getElementById('notGoingList').innerHTML = rsvps.notGoing.length > 0 ?
+        rsvps.notGoing.map(p => `<div class="rsvp-list-item">${p.name}</div>`).join('') :
+        '<div class="rsvp-list-item" style="opacity: 0.5;">No one yet</div>';
+
+    // Update simple view if it's active
+    if (currentView === 'simple') {
+        updateSimpleView();
+    }
+}
+
+function promoteFromWaitlist(userId) {
+    const person = rsvps.waitlist.find(r => r.userId === userId);
+    if (!person) return;
+
+    // Check if there's space now
+    const maxAttendees = parseInt(document.getElementById('maxAttendees').value) || 0;
+    if (maxAttendees > 0 && rsvps.going.length >= maxAttendees) {
+        showToast('Event is still at capacity! Increase max attendees first.', 'warning');
+        return;
+    }
+
+    // Move from waitlist to going
+    rsvps.waitlist = rsvps.waitlist.filter(r => r.userId !== userId);
+    rsvps.going.push(person);
+
+    showToast(`${person.name} promoted from waitlist! 🎉`, 'success');
+
+    // Auto-add to unassigned passengers if not already assigned
+    const alreadyAssigned = cars.some(car => car.passengers.some(p => p.userId === userId));
+    const alreadyUnassigned = unassignedPassengers.some(p => p.userId === userId);
+
+    if (!alreadyAssigned && !alreadyUnassigned) {
+        unassignedPassengers.push({
+            id: Date.now(),
+            name: person.name,
+            userId: person.userId
+        });
+        renderUnassigned();
+    }
+
+    updateRSVPDisplay();
+    autoSave();
+}
+
 // Security: Rate limiting to prevent spam
 let lastActionTime = 0;
 const ACTION_COOLDOWN = 500; // 500ms between actions
@@ -924,6 +1108,7 @@ function autoSave() {
     updates[`users/${currentUser.uid}/events/${eventId}/eventDetails`] = eventDetails;
     updates[`users/${currentUser.uid}/events/${eventId}/cars`] = cars;
     updates[`users/${currentUser.uid}/events/${eventId}/unassignedPassengers`] = unassignedPassengers;
+    updates[`users/${currentUser.uid}/events/${eventId}/rsvps`] = rsvps;
     updates[`users/${currentUser.uid}/events/${eventId}/eventStatus`] = eventStatus;
     updates[`users/${currentUser.uid}/events/${eventId}/lastUpdated`] = firebase.database.ServerValue.TIMESTAMP;
 
@@ -2195,6 +2380,14 @@ function checkForSharedEvent() {
             unassignedPassengers = data.unassignedPassengers || [];
             eventOwnerId = data.ownerId || null;
 
+            // Load RSVPs
+            if (data.rsvps) {
+                rsvps = data.rsvps;
+            } else {
+                // Initialize empty RSVP structure if not present
+                rsvps = { going: [], maybe: [], notGoing: [], waitlist: [] };
+            }
+
             // Ensure all cars have passengers arrays
             cars.forEach(car => {
                 if (!car.passengers) {
@@ -2303,6 +2496,14 @@ function loadData() {
         cars = data.cars || [];
         unassignedPassengers = data.unassignedPassengers || [];
         eventStatus = data.eventStatus || 'draft';
+
+        // Load RSVPs
+        if (data.rsvps) {
+            rsvps = data.rsvps;
+        } else {
+            // Initialize empty RSVP structure if not present
+            rsvps = { going: [], maybe: [], notGoing: [], waitlist: [] };
+        }
 
         // Ensure all cars have passengers arrays
         cars.forEach(car => {
